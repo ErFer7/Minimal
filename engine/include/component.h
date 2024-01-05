@@ -1,7 +1,8 @@
 #pragma once
 
-class Component {
+class IComponent {
    public:
-    Component() = default;
-    ~Component() = default;
+    IComponent() = default;
+    virtual ~IComponent() = default;
+    virtual void update() = 0;
 };

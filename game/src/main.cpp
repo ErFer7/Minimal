@@ -1,10 +1,11 @@
-#include "../../engine/include/main_manager.h"
+#include "../../engine/include/engine_core.h"
 
 int main() {
-    MainManager *mainManager = new MainManager();
+    EngineCore *engine_core = new EngineCore();
 
-    mainManager->init_main_window(800, 450, "Sample");
-    mainManager->init_main_loop();
+    engine_core->init_main_loop(1600, 800, "Sample");
+
+    delete engine_core;
 
     return 0;
 }
