@@ -1,5 +1,7 @@
 #include "../include/entity.h"
 
+#include <iostream>
+
 unsigned int Entity::_next_id = 0;
 
 Entity::Entity(std::string name, bool auto_managed) {
@@ -8,11 +10,19 @@ Entity::Entity(std::string name, bool auto_managed) {
     this->_active = true;
     this->_auto_managed = auto_managed;
     this->_registered = false;
+    this->_unregistered_descendants = false;
+    this->_descendants_marked_for_deletion = false;
+    this->_delete = false;
     this->_parent = nullptr;
     this->_children = new DynamicArray<Entity *>(4, 4);
 }
 
-Entity::~Entity() { delete this->_children; }
+Entity::~Entity() {
+    if (this->_children != nullptr) {
+        delete this->_children;
+        this->_children = nullptr;
+    }
+}
 
 void Entity::set_registered(bool registered) {
     this->_registered = registered;
@@ -65,7 +75,7 @@ void Entity::set_active(bool is_active) {
     }
 }
 
-void Entity::set_parent(Entity *parent) {
+void Entity::reparent(Entity *parent) {
     if (this->_parent != nullptr) {
         this->_parent->remove_reference_to_child(this);
     }
@@ -103,6 +113,8 @@ void Entity::register_all_descendants(DynamicArray<Entity *> *entities) {
         if (child != nullptr && !child->is_registered()) {
             entities->add(child);
             child->set_registered(true);
+
+            std::cout << "Registered entity " << child->get_name() << " with ID " << child->get_id() << std::endl;
 
             if (child->has_unregistered_descendants()) {
                 child->register_all_descendants(entities);

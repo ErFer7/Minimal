@@ -14,6 +14,7 @@ class Entity {
     inline std::string get_name() const { return this->_name; }
     inline void set_name(std::string name) { this->_name = name; }
     inline Entity *get_parent() const { return this->_parent; }
+    inline void set_parent(Entity *parent) { this->_parent = parent; }
     inline unsigned int get_child_count() const { return this->_children->get_element_count(); }
     inline bool is_registered() const { return this->_registered; }
     inline bool has_unregistered_descendants() const { return this->_unregistered_descendants; }
@@ -25,7 +26,7 @@ class Entity {
     void mark_for_deletion();
     void set_active(bool is_active);
     void set_auto_managed(bool auto_managed);
-    void set_parent(Entity *parent);
+    void reparent(Entity *parent);
     void add_child(Entity *entity);
     void register_all_descendants(DynamicArray<Entity *> *entities);
     bool has_child(Entity *entity);

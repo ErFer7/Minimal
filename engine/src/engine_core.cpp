@@ -17,5 +17,8 @@ void EngineCore::init_main_loop(int window_width, int window_height, const char 
 
     CloseWindow();
 
-    delete this->_entity_manager;
+    if (this->_entity_manager != nullptr) {
+        delete this->_entity_manager;
+        this->_entity_manager = nullptr;
+    }
 }

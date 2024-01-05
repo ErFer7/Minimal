@@ -15,7 +15,7 @@ class DynamicArray {
     }
 
     ~DynamicArray() {
-        if (this->_array) {
+        if (this->_array != nullptr) {
             delete[] this->_array;
         }
     }
