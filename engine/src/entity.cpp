@@ -1,7 +1,5 @@
 #include "../include/entity.h"
 
-#include <iostream>
-
 unsigned int Entity::_next_id = 0;
 
 Entity::Entity(std::string name, bool auto_managed) {
@@ -111,14 +109,12 @@ void Entity::register_all_descendants(DynamicArray<Entity *> *entities) {
         Entity *child = this->_children->raw_at(i);
 
         if (child != nullptr && !child->is_registered()) {
-            entities->add(child);
-            child->set_registered(true);
-
-            std::cout << "Registered entity " << child->get_name() << " with ID " << child->get_id() << std::endl;
-
             if (child->has_unregistered_descendants()) {
                 child->register_all_descendants(entities);
             }
+
+            entities->add(child);
+            child->set_registered(true);
         }
     }
 }

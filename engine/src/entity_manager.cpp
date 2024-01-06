@@ -1,7 +1,5 @@
 #include "../include/entity_manager.h"
 
-#include <iostream>
-
 EntityManager::EntityManager() {
     this->_root = new Entity("Global Root");
     this->_entities = new DynamicArray<Entity *>(128, 16);
@@ -94,12 +92,4 @@ void EntityManager::update() {
     if (this->_root->has_unregistered_descendants()) {
         this->_root->register_all_descendants(this->_entities);
     }
-
-    // for (unsigned int i = 0; i < this->_entities->get_size(); i++) {
-    //     Entity *entity = this->_entities->raw_at(i);
-
-    //     if (entity != nullptr) {
-    //         std::cout << entity->get_name() << '\n' << std::endl;
-    //     }
-    // }
 }
