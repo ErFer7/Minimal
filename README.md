@@ -6,8 +6,11 @@ This is a very simple game engine for personal projects
 
 Execution order:
 
-* Entity management
-* Main custom loop update
-* Script components
-* Physics components
-* Graphical components
+Main thread:
+* Entity management [Parallel]
+* Main custom loop update [Sequential]
+* Script components [Sequential]
+* Physics components [Parallel]
+
+Graphics thread:
+* Graphical components [Parallel]

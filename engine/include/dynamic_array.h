@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 template <typename T>
 class DynamicArray {
    public:
@@ -20,6 +22,8 @@ class DynamicArray {
         }
     }
 
+    inline T get_empty_element() { return this->_empty_element; }
+
     void fill(T element) {
         for (unsigned int i = 0; i < this->_size; i++) {
             this->_array[i] = element;
@@ -30,14 +34,12 @@ class DynamicArray {
         this->fill(this->_empty_element);
         this->_next_index = 0;
         this->_element_count = 0;
-        this->downsize();
+        this->optimize();
     }
 
-    bool contains(const T &element) {
-        return this->raw_index_of(element) != -1;
-    }
+    bool contains(const T &element) { return this->nullable_index_of(element) != -1; }
 
-    int raw_index_of(const T &element) {
+    int nullable_index_of(const T &element) {
         for (unsigned int i = 0; i < this->_size; i++) {
             if (this->_array[i] == element) {
                 return i;
@@ -63,9 +65,19 @@ class DynamicArray {
         return -1;
     }
 
-    T &raw_at(unsigned int index) { return this->_array[index]; }
+    T &nullable_at(unsigned int index) {
+        if (index >= this->_size) {
+            return this->_empty_element;
+        }
+
+        return this->_array[index];
+    }
 
     T &at(unsigned int index) {
+        if (index >= this->_element_count) {
+            return this->_empty_element;
+        }
+
         unsigned int counted_index = 0;
 
         for (unsigned int i = 0; i < this->_size; i++) {
@@ -109,9 +121,7 @@ class DynamicArray {
         this->_size += this->_section_size;
         T *new_array = new T[this->_size];
 
-        for (unsigned int i = 0; i < this->_size - 1; i++) {
-            new_array[i] = this->_array[i];
-        }
+        std::copy(this->_array, this->_array + this->_size - 1, new_array);
 
         new_array[this->_size - 1] = element;
         this->_element_count++;
@@ -120,12 +130,12 @@ class DynamicArray {
         this->_array = new_array;
     }
 
-    bool remove(const T &element) {
+    bool remove(const T &element, bool optimize = true) {
         if (element == this->_empty_element) {
             return false;
         }
 
-        int index = this->raw_index_of(element);
+        int index = this->nullable_index_of(element);
 
         if (index == -1) {
             return false;
@@ -133,37 +143,42 @@ class DynamicArray {
 
         this->_array[index] = this->_empty_element;
         this->_element_count--;
-        this->downsize();
+
+        if (optimize) {
+            this->optimize();
+        }
 
         return true;
     }
 
-    bool raw_remove_at(unsigned int index) {
+    bool nullable_remove_at(unsigned int index, bool optimize = true) {
         if (this->_array[index] == this->_empty_element) {
             return false;
         }
 
         this->_array[index] = this->_empty_element;
         this->_element_count--;
-        this->downsize();
+
+        if (optimize) {
+            this->optimize();
+        }
 
         return true;
     }
 
-    bool remove_at(unsigned int index) {
+    bool remove_at(unsigned int index, bool optimize = true) {
         unsigned int counted_index = 0;
 
         for (unsigned int i = 0; i < this->_size; i++) {
             if (this->_array[i] != this->_empty_element) {
                 if (counted_index == index) {
-                    if (this->_array[i] == this->_empty_element) {
-                        break;
-                    }
-
                     this->_array[i] = this->_empty_element;
                     this->_element_count--;
-                    this->downsize();
-                    
+
+                    if (optimize) {
+                        this->optimize();
+                    }
+
                     return true;
                 }
 
@@ -174,7 +189,57 @@ class DynamicArray {
         return false;
     }
 
-    void downsize() {
+    T nullable_pop_at(unsigned int index, bool optimize = true) {
+        T element = this->_array[index];
+        this->_array[index] = this->_empty_element;
+        this->_element_count--;
+
+        if (optimize) {
+            this->optimize();
+        }
+
+        return element;
+    }
+
+    T pop_at(unsigned int index, bool optimize = true) {
+        unsigned int counted_index = 0;
+
+        for (unsigned int i = 0; i < this->_size; i++) {
+            if (this->_array[i] != this->_empty_element) {
+                if (counted_index == index) {
+                    T element = this->_array[i];
+                    this->_array[i] = this->_empty_element;
+                    this->_element_count--;
+
+                    if (optimize) {
+                        this->optimize();
+                    }
+
+                    return element;
+                }
+
+                counted_index++;
+            }
+        }
+
+        return this->_empty_element;
+    }
+
+    T *get_elements() {
+        T *elements = new T[this->_element_count];
+        unsigned int counted_index = 0;
+
+        for (unsigned int i = 0; i < this->_size; i++) {
+            if (this->_array[i] != this->_empty_element) {
+                elements[counted_index] = this->_array[i];
+                counted_index++;
+            }
+        }
+
+        return elements;
+    }
+
+    void optimize() {
         unsigned int excess_sections = (this->_size - this->_element_count) / this->_section_size;
 
         if (excess_sections > 0) {
@@ -203,4 +268,48 @@ class DynamicArray {
     unsigned int _next_index;
     unsigned int _section_size;
     unsigned int _element_count;
+};
+
+template <typename T>
+class DynamicArrayIterator {
+   public:
+    DynamicArrayIterator(DynamicArray<T> *dynamic_array) {
+        this->_dynamic_array = dynamic_array;
+        this->_nullable_index = 0;
+        this->_index = 0;
+    }
+
+    ~DynamicArrayIterator() = default;
+
+    inline bool has_nullable_next() { return this->_nullable_index < this->_dynamic_array->get_element_count(); }
+    inline bool has_next() { return this->_index < this->_dynamic_array->get_size(); }
+
+    T nullable_next() {
+        T element = this->_dynamic_array->nullable_at(this->_nullable_index++);
+        return element;
+    }
+
+    T next() {
+        while (true) {
+            if (this->_index >= this->_dynamic_array->get_size()) {
+                break;
+            }
+
+            T element = this->_dynamic_array->nullable_at(this->_index++);
+
+            if (element != this->_dynamic_array->get_empty_element()) {
+                return element;
+            }
+        }
+
+        return this->_dynamic_array->get_empty_element();
+    }
+
+    void nullable_reset() { this->_nullable_index = 0; }
+    void reset() { this->_index = 0; }
+
+   private:
+    DynamicArray<T> *_dynamic_array;
+    unsigned int _nullable_index;
+    unsigned int _index;
 };

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstddef>
+#include <typeinfo>
+
 class IManager {
    public:
     virtual ~IManager() = default;

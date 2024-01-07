@@ -3,7 +3,7 @@
 EngineCore::EngineCore() {
     this->_entity_manager = new EntityManager();
     this->_main_behaviour_manager = nullptr;
-    this->_behaviour_manager = new BehaviourManager();
+    this->_behaviour_manager = new BehaviourManager(this);
 }
 
 EngineCore::~EngineCore() {
@@ -21,6 +21,22 @@ EngineCore::~EngineCore() {
         delete this->_behaviour_manager;
         this->_behaviour_manager = nullptr;
     }
+}
+
+EntityManager *EngineCore::get_entity_manager() {
+    return this->_entity_manager;
+}
+
+MainBehaviourManager *EngineCore::get_main_behaviour_manager() {
+    return this->_main_behaviour_manager;
+}
+
+void EngineCore::set_main_behaviour_manager(MainBehaviourManager *main_behaviour_manager) {
+    this->_main_behaviour_manager = main_behaviour_manager;
+}
+
+BehaviourManager *EngineCore::get_behaviour_manager() {
+    return this->_behaviour_manager;
 }
 
 void EngineCore::init_main_loop(int window_width, int window_height, const char *window_title) {
@@ -43,6 +59,6 @@ void EngineCore::init_main_loop(int window_width, int window_height, const char 
     CloseWindow();
 
     this->_main_behaviour_manager->exit();
-    this->_entity_manager->exit();
     this->_behaviour_manager->exit();
+    this->_entity_manager->exit();
 }
