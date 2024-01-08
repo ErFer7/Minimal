@@ -3,25 +3,22 @@
 #include <typeinfo>
 
 #include "behaviour_component.h"
-#include "engine_core.h"
-#include "entity.h"
-#include "entity_manager.h"
-#include "manager_interface.h"
+#include "dynamic_array.h"
+#include "manager.h"
 
-class EngineCore;
-
-class BehaviourManager : public IManager {
+class BehaviourManager : public Manager {
    public:
     BehaviourManager(EngineCore *engine_core);
     ~BehaviourManager();
-    void update_component_references();
     void init() override;
     void update() override;
     void exit() override;
 
    private:
-    EngineCore *_engine_core;
     DynamicArray<BehaviourComponent *> *_behaviour_components;
 
-    void _on_component_remove(Component *component);
+    void _register_component(BehaviourComponent *behaviour_component);
+    void _unregister_component(BehaviourComponent *behaviour_component);
+
+    friend class BehaviourComponent;
 };

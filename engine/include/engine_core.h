@@ -1,12 +1,13 @@
 #pragma once
 
 #include "behaviour_manager.h"
-#include "entity.h"
 #include "entity_manager.h"
 #include "main_behaviour_manager.h"
-#include "manager_interface.h"
+#include "manager.h"
 #include "raylib.h"
 
+class Manager;
+class EntityManager;
 class MainBehaviourManager;
 class BehaviourManager;
 

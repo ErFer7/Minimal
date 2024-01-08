@@ -4,22 +4,23 @@
 #include <string>
 #include <typeinfo>
 
-#include "component.h"
 #include "dynamic_array.h"
 #include "entity.h"
-#include "manager_interface.h"
+#include "manager.h"
 
-class EntityManager : public IManager {
+class Entity;
+
+class EntityManager : public Manager {
    public:
-    EntityManager();
+    EntityManager(EngineCore *engine_core);
     ~EntityManager() override;
-    inline void add_entity(Entity *entity) { this->_root->add_child(entity); }
-    inline void remove_all_entities() { this->_root->remove_all_children(); }
     inline DynamicArrayIterator<Entity *> *get_entities_iterator() {
         return new DynamicArrayIterator<Entity *>(this->_entities);
     }
     inline unsigned int get_entity_count() const { return this->_entities->get_element_count(); }
     inline unsigned int get_temp_component_count() const { return this->_temp_components->get_element_count(); }
+    void add_entity(Entity *entity);
+    void remove_all_entities();
     Entity *find_entity(unsigned int entity_id);
     Entity *find_entity(std::string entity_name);
     bool remove_entity(unsigned int entity_id);
@@ -45,6 +46,9 @@ class EntityManager : public IManager {
     DynamicArray<Entity *> *_entities;
     DynamicArray<Component *> *_temp_components;
 
-    void _on_entity_remove(Entity *entity);
+    void _unregister_entity(Entity *entity);
     void _on_temp_component_remove(Component *component);
+    void _register_entity(Entity *entity);
+
+    friend class Entity;
 };

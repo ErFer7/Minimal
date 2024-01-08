@@ -1,12 +1,12 @@
 #include "../include/entity_manager.h"
 
-EntityManager::EntityManager() {
+EntityManager::EntityManager(EngineCore *engine_core) : Manager(engine_core) {
     this->_root = new Entity("Global Root");
     this->_entities = new DynamicArray<Entity *>(128, 16);
     this->_temp_components = new DynamicArray<Component *>(256, 32);
 
     this->_entities->add(this->_root);
-    this->_root->set_registered(true);
+    this->_root->set_engine_core(engine_core);
 }
 
 EntityManager::~EntityManager() {
@@ -22,6 +22,10 @@ EntityManager::~EntityManager() {
         this->_entities = nullptr;
     }
 }
+
+void EntityManager::add_entity(Entity *entity) { this->_root->add_child(entity); }
+
+void EntityManager::remove_all_entities() { this->_root->remove_all_children(); }
 
 Entity *EntityManager::find_entity(unsigned int entity_id) {
     for (unsigned int i = 0; i < this->_entities->get_size(); i++) {
@@ -58,20 +62,14 @@ bool EntityManager::remove_entity(std::string entity_name) {
 }
 
 void EntityManager::update() {
-    if (this->_root->has_unregistered_descendants()) {
-        this->_root->register_all_descendants(
-            this->_entities, std::bind(&EntityManager::_on_entity_remove, this, std::placeholders::_1));
-    }
-
-    if (this->_root->has_descendants_with_unregistered_components()) {
-        this->_root->register_all_descendants_components(
-            this->_temp_components, std::bind(&EntityManager::_on_temp_component_remove, this, std::placeholders::_1));
-    }
-
     this->_entities->optimize();
     this->_temp_components->optimize();
 }
 
-void EntityManager::_on_entity_remove(Entity *entity) { this->_entities->remove(entity, false); }
+void EntityManager::_unregister_entity(Entity *entity) { this->_entities->remove(entity, false); }
 
-void EntityManager::_on_temp_component_remove(Component *component) { this->_temp_components->remove(component, false); }
+void EntityManager::_on_temp_component_remove(Component *component) {
+    this->_temp_components->remove(component, false);
+}
+
+void EntityManager::_register_entity(Entity *entity) { this->_entities->add(entity); }

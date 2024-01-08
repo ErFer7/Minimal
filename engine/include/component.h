@@ -1,7 +1,11 @@
 #pragma once
 
-#include <functional>
 #include <string>
+
+#include "engine_core.h"
+
+class EngineCore;
+class Entity;
 
 class Component {
    public:
@@ -12,18 +16,22 @@ class Component {
     inline bool is_active() const { return this->_active; }
     inline void set_active(bool active) { this->_active = active; }
     inline bool is_unique() const { return this->_unique; }
-    inline bool is_registered() const { return this->_registered; }
-    inline void set_registered(bool registered) { this->_registered = registered; }
-    inline void set_removal_callback(std::function<void(Component *)> removal_callback) {
-        this->_removal_callback = removal_callback;
-    }
-    inline void call_removal_callback() { this->_removal_callback(this); }
+    inline EngineCore *get_engine_core() { return this->_engine_core; }
+    inline void set_engine_core(EngineCore *engine_core) { this->_engine_core = engine_core; }
+    inline Entity *get_entity() { return this->_entity; }
+    inline void set_entity(Entity *entity) { this->_entity = entity; }
     virtual void on_update() = 0;
+
+   protected:
+    virtual void register_component() = 0;
+    virtual void unregister_component() = 0;
 
    private:
     std::string _name;
     bool _active;
     bool _unique;
-    bool _registered;
-    std::function<void(Component *)> _removal_callback;
+    EngineCore *_engine_core;
+    Entity *_entity;
+
+    friend class Entity;
 };

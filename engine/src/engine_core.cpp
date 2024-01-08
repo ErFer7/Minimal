@@ -1,7 +1,7 @@
 #include "../include/engine_core.h"
 
 EngineCore::EngineCore() {
-    this->_entity_manager = new EntityManager();
+    this->_entity_manager = new EntityManager(this);
     this->_main_behaviour_manager = nullptr;
     this->_behaviour_manager = new BehaviourManager(this);
 }

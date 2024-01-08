@@ -1,19 +1,12 @@
 #pragma once
 
-#include "engine_core.h"
-#include "manager_interface.h"
+#include "manager.h"
 
-class EngineCore;
-
-class MainBehaviourManager : public IManager {
+class MainBehaviourManager : public Manager {
    public:
-    MainBehaviourManager(EngineCore *engine_core);
+    MainBehaviourManager(EngineCore *engine_core) : Manager(engine_core){};
     ~MainBehaviourManager() override{};
-    inline EngineCore *get_engine_core() { return this->_engine_core; };
     void init() override{};
     void update() override{};
     void exit() override{};
-
-   private:
-    EngineCore *_engine_core;
 };
