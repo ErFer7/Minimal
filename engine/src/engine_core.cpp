@@ -4,6 +4,7 @@ EngineCore::EngineCore() {
     this->_entity_manager = new EntityContainer(this);
     this->_main_behaviour_manager = nullptr;
     this->_behaviour_manager = new BehaviourManager(this);
+    this->_physics_manager = new PhysicsManager(this);
 }
 
 EngineCore::~EngineCore() {
@@ -21,33 +22,36 @@ EngineCore::~EngineCore() {
         delete this->_behaviour_manager;
         this->_behaviour_manager = nullptr;
     }
+
+    if (this->_physics_manager != nullptr) {
+        delete this->_physics_manager;
+        this->_physics_manager = nullptr;
+    }
 }
 
-EntityContainer *EngineCore::get_entity_manager() {
-    return this->_entity_manager;
-}
+EntityContainer *EngineCore::get_entity_manager() { return this->_entity_manager; }
 
-MainBehaviourManager *EngineCore::get_main_behaviour_manager() {
-    return this->_main_behaviour_manager;
-}
+MainBehaviourManager *EngineCore::get_main_behaviour_manager() { return this->_main_behaviour_manager; }
 
 void EngineCore::set_main_behaviour_manager(MainBehaviourManager *main_behaviour_manager) {
     this->_main_behaviour_manager = main_behaviour_manager;
 }
 
-BehaviourManager *EngineCore::get_behaviour_manager() {
-    return this->_behaviour_manager;
-}
+BehaviourManager *EngineCore::get_behaviour_manager() { return this->_behaviour_manager; }
+
+PhysicsManager *EngineCore::get_physics_manager() { return this->_physics_manager; }
 
 void EngineCore::init_main_loop(int window_width, int window_height, const char *window_title) {
     this->_behaviour_manager->init();
     this->_main_behaviour_manager->init();
+    this->_physics_manager->init();
 
     InitWindow(window_width, window_height, window_title);
 
     while (!WindowShouldClose()) {
         this->_main_behaviour_manager->update();
         this->_behaviour_manager->update();
+        this->_physics_manager->update();
 
         BeginDrawing();
         ClearBackground(BLACK);
@@ -56,6 +60,7 @@ void EngineCore::init_main_loop(int window_width, int window_height, const char 
 
     CloseWindow();
 
+    this->_physics_manager->exit();
     this->_main_behaviour_manager->exit();
     this->_behaviour_manager->exit();
 }

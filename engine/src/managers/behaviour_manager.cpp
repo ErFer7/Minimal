@@ -1,4 +1,4 @@
-#include "../include/behaviour_manager.h"
+#include "../../include/managers/behaviour_manager.h"
 
 void BehaviourManager::init() {
     DynamicArray<Component *> *components = this->get_components();

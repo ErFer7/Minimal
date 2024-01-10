@@ -1,6 +1,6 @@
 #pragma once
 
-#include "behaviour_manager.h"
+#include "../managers/behaviour_manager.h"
 #include "component.h"
 
 class BehaviourComponent : public Component {

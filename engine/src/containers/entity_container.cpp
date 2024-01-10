@@ -1,4 +1,4 @@
-#include "../include/entity_container.h"
+#include "../../include/containers/entity_container.h"
 
 EntityContainer::EntityContainer(EngineCore *engine_core) {
     this->_root = new Entity("Global Root");

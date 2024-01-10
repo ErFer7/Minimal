@@ -1,4 +1,4 @@
-#include "../include/entity.h"
+#include "../../include/entities/entity.h"
 
 unsigned int Entity::_next_id = 0;
 

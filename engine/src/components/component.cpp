@@ -1,4 +1,4 @@
-#include "../include/component.h"
+#include "../../include/components/component.h"
 
 Component::Component(bool unique, std::string name) {
     this->_name = name;

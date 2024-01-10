@@ -3,8 +3,8 @@
 #include <string>
 #include <typeinfo>
 
-#include "component.h"
-#include "dynamic_array.h"
+#include "../components/component.h"
+#include "../utils/dynamic_array.h"
 
 class EngineCore;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dynamic_array.h"
+#include "../utils/dynamic_array.h"
 #include "manager.h"
 
 class Component;

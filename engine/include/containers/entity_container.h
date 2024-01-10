@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "dynamic_array.h"
-#include "entity.h"
+#include "../entities/entity.h"
+#include "../utils/dynamic_array.h"
 
 class EngineCore;
 

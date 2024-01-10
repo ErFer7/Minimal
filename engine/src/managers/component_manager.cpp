@@ -1,4 +1,4 @@
-#include "../include/component_manager.h"
+#include "../../include/managers/component_manager.h"
 
 ComponentManager::ComponentManager(EngineCore *engine_core) : Manager(engine_core) {
     this->_components = new DynamicArray<Component *>(256, 32);

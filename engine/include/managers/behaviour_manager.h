@@ -2,9 +2,9 @@
 
 #include <typeinfo>
 
-#include "behaviour_component.h"
+#include "../components/behaviour_component.h"
+#include "../engine_core.h"
 #include "component_manager.h"
-#include "engine_core.h"
 
 class BehaviourComponent;
 
