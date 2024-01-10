@@ -4,6 +4,7 @@
 #include <typeinfo>
 
 #include "../components/component.h"
+#include "../components/managed_component.h"
 #include "../utils/dynamic_array.h"
 
 class EngineCore;

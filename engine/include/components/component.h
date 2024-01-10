@@ -18,13 +18,8 @@ class Component {
     inline void set_engine_core(EngineCore *engine_core) { this->_engine_core = engine_core; }
     inline Entity *get_entity() { return this->_entity; }
     inline void set_entity(Entity *entity) { this->_entity = entity; }
-    virtual void on_init() = 0;
-    virtual void on_update() = 0;
-    virtual void on_exit() = 0;
-
-   protected:
-    virtual void register_component() = 0;
-    virtual void unregister_component() = 0;
+    virtual void on_add_to_entity() = 0;
+    virtual void on_remove_from_entity() = 0;
 
    private:
     std::string _name;
@@ -32,6 +27,4 @@ class Component {
     bool _unique;
     EngineCore *_engine_core;
     Entity *_entity;
-
-    friend class Entity;
 };

@@ -1,18 +1,18 @@
 CC = g++
 LDLIBS = -lraylib
 CFLAGS = -g -Wall -ggdb3
-ENGINE_SRC_DIR = ../engine/src
-ENGINE_LIB_DIR = ../engine/include
-GAME_SRC_DIR = src
-GAME_LIB_DIR = include
-OBJ_DIR = obj
+ENGINE_SRC_DIR = ./engine/src
+ENGINE_LIB_DIR = ./engine/include
+GAME_SRC_DIR = ./game/src
+GAME_LIB_DIR = ./game/include
+OBJ_DIR = ./game/obj
 LIB = $(shell find $(ENGINE_LIB_DIR) -name '*.h') $(shell find $(GAME_LIB_DIR) -name '*.h')
 ENGINE_SRC := $(shell find $(ENGINE_SRC_DIR) -name '*.cpp')
 GAME_SRC := $(shell find $(GAME_SRC_DIR) -name '*.cpp')
 OBJ := $(patsubst $(ENGINE_SRC_DIR)/%, $(OBJ_DIR)/%,$(ENGINE_SRC:.cpp=.o)) $(patsubst $(GAME_SRC_DIR)/%, $(OBJ_DIR)/%,$(GAME_SRC:.cpp=.o))
 COMPILE_OBJ = $(CC) $(CFLAGS) -c $< -o $@
 
-EXECUTABLE = "bin/TestGame"
+EXECUTABLE = "./game/bin/TestGame"
 
 .PHONY: default
 default: makedir main

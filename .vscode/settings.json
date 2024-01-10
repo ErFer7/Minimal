@@ -53,5 +53,12 @@
         "streambuf": "cpp",
         "thread": "cpp",
         "typeinfo": "cpp"
-    }
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/erfer/Documents/Code/Minimal/game/bin",
+            "binaryPath": "/home/erfer/Documents/Code/Minimal/game/bin/TestGame",
+            "binaryArgs": []
+        }
+    ]
 }
