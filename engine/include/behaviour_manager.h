@@ -3,22 +3,19 @@
 #include <typeinfo>
 
 #include "behaviour_component.h"
-#include "dynamic_array.h"
-#include "manager.h"
+#include "component_manager.h"
+#include "engine_core.h"
 
-class BehaviourManager : public Manager {
+class BehaviourComponent;
+
+class BehaviourManager : public ComponentManager {
    public:
-    BehaviourManager(EngineCore *engine_core);
-    ~BehaviourManager();
+    BehaviourManager(EngineCore *engine_core) : ComponentManager(engine_core){};
+    ~BehaviourManager() override = default;
     void init() override;
     void update() override;
     void exit() override;
 
    private:
-    DynamicArray<BehaviourComponent *> *_behaviour_components;
-
-    void _register_component(BehaviourComponent *behaviour_component);
-    void _unregister_component(BehaviourComponent *behaviour_component);
-
     friend class BehaviourComponent;
 };

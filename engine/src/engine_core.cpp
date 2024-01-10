@@ -1,7 +1,7 @@
 #include "../include/engine_core.h"
 
 EngineCore::EngineCore() {
-    this->_entity_manager = new EntityManager(this);
+    this->_entity_manager = new EntityContainer(this);
     this->_main_behaviour_manager = nullptr;
     this->_behaviour_manager = new BehaviourManager(this);
 }
@@ -23,7 +23,7 @@ EngineCore::~EngineCore() {
     }
 }
 
-EntityManager *EngineCore::get_entity_manager() {
+EntityContainer *EngineCore::get_entity_manager() {
     return this->_entity_manager;
 }
 
@@ -40,14 +40,12 @@ BehaviourManager *EngineCore::get_behaviour_manager() {
 }
 
 void EngineCore::init_main_loop(int window_width, int window_height, const char *window_title) {
-    this->_entity_manager->init();
     this->_behaviour_manager->init();
     this->_main_behaviour_manager->init();
 
     InitWindow(window_width, window_height, window_title);
 
     while (!WindowShouldClose()) {
-        this->_entity_manager->update();
         this->_main_behaviour_manager->update();
         this->_behaviour_manager->update();
 
@@ -60,5 +58,4 @@ void EngineCore::init_main_loop(int window_width, int window_height, const char 
 
     this->_main_behaviour_manager->exit();
     this->_behaviour_manager->exit();
-    this->_entity_manager->exit();
 }

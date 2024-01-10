@@ -66,7 +66,6 @@ void Entity::add_child(Entity *entity) {
     entity->set_auto_managed(this->_auto_managed);
     entity->set_engine_core(this->_engine_core);
     this->_children->add(entity);
-    this->_engine_core->get_entity_manager()->_register_entity(entity);
 }
 
 bool Entity::has_child(Entity *entity) { return this->_children->contains(entity); }
@@ -222,7 +221,6 @@ bool Entity::remove_child(Entity *entity) {
     }
 
     if (this->_children->remove(entity)) {
-        this->_engine_core->get_entity_manager()->_unregister_entity(entity);
         entity->remove_all_children();
         delete entity;
 
@@ -236,7 +234,6 @@ bool Entity::remove_child(unsigned int entity_id) {
     Entity *entity = this->remove_reference_to_child(entity_id);
 
     if (entity != nullptr && entity->is_auto_managed()) {
-        this->_engine_core->get_entity_manager()->_unregister_entity(entity);
         entity->remove_all_children();
         delete entity;
 
@@ -250,7 +247,6 @@ bool Entity::remove_child(std::string entity_name) {
     Entity *entity = this->remove_reference_to_child(entity_name);
 
     if (entity != nullptr && entity->is_auto_managed()) {
-        this->_engine_core->get_entity_manager()->_unregister_entity(entity);
         entity->remove_all_children();
         delete entity;
 
@@ -378,7 +374,6 @@ void Entity::remove_all_children() {
     for (unsigned int i = 0; i < this->_children->get_size(); i++) {
         Entity *child = this->_children->nullable_at(i);
         if (child != nullptr && child->is_auto_managed()) {
-            this->_engine_core->get_entity_manager()->_unregister_entity(child);
             child->remove_all_children();
             delete child;
         }

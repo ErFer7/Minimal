@@ -5,7 +5,8 @@
 
 #include "component.h"
 #include "dynamic_array.h"
-#include "engine_core.h"
+
+class EngineCore;
 
 class Component;
 

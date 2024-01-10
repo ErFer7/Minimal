@@ -3,12 +3,7 @@
 #include <cstddef>
 #include <typeinfo>
 
-#include "engine_core.h"
-#include "component.h"
-
 class EngineCore;
-
-class Component;
 
 class Manager {
    public:

@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include "engine_core.h"
-
 class EngineCore;
 class Entity;
 
@@ -20,7 +18,9 @@ class Component {
     inline void set_engine_core(EngineCore *engine_core) { this->_engine_core = engine_core; }
     inline Entity *get_entity() { return this->_entity; }
     inline void set_entity(Entity *entity) { this->_entity = entity; }
+    virtual void on_init() = 0;
     virtual void on_update() = 0;
+    virtual void on_exit() = 0;
 
    protected:
     virtual void register_component() = 0;
