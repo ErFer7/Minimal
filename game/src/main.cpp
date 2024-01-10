@@ -1,6 +1,3 @@
-#include "../../engine/include/engine_core.h"
-#include "../../engine/include/entity.h"
-#include "../../engine/include/entity_manager.h"
 #include "../include/custom_main_behaviour_manager.h"
 
 int main() {

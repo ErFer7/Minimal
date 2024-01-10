@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../../engine/include/engine_core.h"
-#include "../../engine/include/main_behaviour_manager.h"
+#include "../../engine/minimal.h"
 
 class CustomMainBehaviourManager : public MainBehaviourManager {
    public:
