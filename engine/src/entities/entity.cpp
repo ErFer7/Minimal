@@ -411,6 +411,7 @@ void Entity::add_component(Component *component) {
         }
 
         this->_components->add(component);
+        component->on_add_to_entity();
     }
 }
 
@@ -477,6 +478,7 @@ Component **Entity::get_components_of_type(const std::type_info &type_info) {
 
 void Entity::remove_component(unsigned int index) {
     Component *component = this->_components->at(index);
+    component->on_remove_from_entity();
 
     if (dynamic_cast<ManagedComponent *>(component) != nullptr) {
         ManagedComponent *managed_component = static_cast<ManagedComponent *>(component);
@@ -492,6 +494,8 @@ void Entity::remove_component(const std::type_info &type_info) {
         Component *component = this->_components->nullable_at(i);
 
         if (component != nullptr && typeid(*component) == type_info) {
+            component->on_remove_from_entity();
+
             if (dynamic_cast<ManagedComponent *>(component) != nullptr) {
                 ManagedComponent *managed_component = static_cast<ManagedComponent *>(component);
                 managed_component->unregister_component();
@@ -509,6 +513,8 @@ void Entity::remove_component(std::string component_name) {
         Component *component = this->_components->nullable_at(i);
 
         if (component != nullptr && component->get_name() == component_name) {
+            component->on_remove_from_entity();
+
             if (dynamic_cast<ManagedComponent *>(component) != nullptr) {
                 ManagedComponent *managed_component = static_cast<ManagedComponent *>(component);
                 managed_component->unregister_component();
@@ -526,6 +532,8 @@ void Entity::remove_all_components() {
         Component *component = this->_components->nullable_at(i);
 
         if (component != nullptr) {
+            component->on_remove_from_entity();
+
             if (dynamic_cast<ManagedComponent *>(component) != nullptr) {
                 ManagedComponent *managed_component = static_cast<ManagedComponent *>(component);
                 managed_component->unregister_component();
