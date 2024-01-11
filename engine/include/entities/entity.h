@@ -75,6 +75,8 @@ class Entity {
     void remove_component(const std::type_info &type_info);
     void remove_component(std::string component_name);
     void remove_all_components();
+    void on_parent_add();
+    void on_parent_remove();
 
     template <typename T>
     bool has_component() {

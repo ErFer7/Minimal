@@ -20,6 +20,8 @@ class Component {
     inline void set_entity(Entity *entity) { this->_entity = entity; }
     virtual void on_add_to_entity() = 0;
     virtual void on_remove_from_entity() = 0;
+    virtual void on_entity_parent_added(Entity *parent) = 0;
+    virtual void on_entity_parent_removed(Entity *parent) = 0;
 
    private:
     std::string _name;

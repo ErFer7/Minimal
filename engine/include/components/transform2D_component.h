@@ -2,10 +2,10 @@
 
 #include <functional>
 
+#include "../entities/entity.h"
 #include "../utils/dynamic_array.h"
 #include "component.h"
 #include "raymath.h"
-#include "../entities/entity.h"
 
 class Transform2DComponent : public Component {
    public:
@@ -23,6 +23,8 @@ class Transform2DComponent : public Component {
     inline void remove_update_callback(std::function<void(Transform2DComponent *)> *callback) {
         this->_update_callbacks->remove(callback);
     }
+    void on_entity_parent_added(Entity *parent) override;
+    void on_entity_parent_removed(Entity *parent) override;
     void on_add_to_entity() override;
     void on_remove_from_entity() override;
     void set_local_position(Vector2 position);
@@ -48,12 +50,13 @@ class Transform2DComponent : public Component {
     Vector2 _origin_position;
     float _origin_rotation;
     Vector2 _origin_scale;
+    std::function<void(Transform2DComponent *)> *_update_origin_callback;
     DynamicArray<std::function<void(Transform2DComponent *)> *> *_update_callbacks;
 
+    void _update_origin(Transform2DComponent *parent_transform);
     void _update_world_position();
     void _update_world_rotation();
     void _update_world_scale();
-
     void _notify_update();
     void _on_parent_transform_updated(Transform2DComponent *parent_transform);
 };

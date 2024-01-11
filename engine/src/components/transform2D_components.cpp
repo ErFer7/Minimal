@@ -10,17 +10,22 @@ Transform2DComponent::Transform2DComponent(std::string name) : Component(true, n
     this->_origin_position = Vector2Zero();
     this->_origin_rotation = 0.0f;
     this->_origin_scale = Vector2One();
+    this->_update_origin_callback = nullptr;
     this->_update_callbacks = new DynamicArray<std::function<void(Transform2DComponent *)> *>();
 }
 
 Transform2DComponent::~Transform2DComponent() {
+    if (this->_update_origin_callback != nullptr) {
+        delete this->_update_origin_callback;
+        this->_update_origin_callback = nullptr;
+    }
+
     if (this->_update_callbacks != nullptr) {
         for (unsigned int i = 0; i < this->_update_callbacks->get_size(); i++) {
             std::function<void(Transform2DComponent *)> *callback = this->_update_callbacks->nullable_at(i);
 
             if (callback != nullptr) {
                 delete callback;
-                this->_update_callbacks->nullable_remove_at(i, false);
             }
         }
 
@@ -30,36 +35,43 @@ Transform2DComponent::~Transform2DComponent() {
     }
 }
 
-void Transform2DComponent::on_add_to_entity() {
-    Transform2DComponent *parent_transform = this->get_entity()->get_component<Transform2DComponent>();
+void Transform2DComponent::on_entity_parent_added(Entity *parent) {
+    Transform2DComponent *parent_transform = parent->get_component<Transform2DComponent>();
 
-    if (parent_transform == nullptr) {
-        return;
+    if (parent_transform != nullptr) {
+        this->_update_origin(parent_transform);
     }
+}
 
-    parent_transform->add_update_callback(new std::function<void(Transform2DComponent *)>(
-        [this](Transform2DComponent *parent_transform) { this->_on_parent_transform_updated(parent_transform); }));
+void Transform2DComponent::on_entity_parent_removed(Entity *parent) {
+    Transform2DComponent *parent_transform = parent->get_component<Transform2DComponent>();
 
-    this->_origin_position = parent_transform->get_world_position();
-    this->_origin_rotation = parent_transform->get_world_rotation();
-    this->_origin_scale = parent_transform->get_world_scale();
+    if (parent_transform != nullptr) {
+        parent_transform->remove_update_callback(this->_update_origin_callback);
+    }
+}
 
-    this->_update_world_position();
-    this->_update_world_rotation();
-    this->_update_world_scale();
+void Transform2DComponent::on_add_to_entity() {
+    Entity *parent = this->get_entity()->get_parent();
 
-    this->_notify_update();
+    if (parent != nullptr) {
+        Transform2DComponent *parent_transform = parent->get_component<Transform2DComponent>();
+
+        if (parent_transform != nullptr) {
+            this->_update_origin(parent_transform);
+        }
+    }
 }
 
 void Transform2DComponent::on_remove_from_entity() {
-    Transform2DComponent *parent_transform = this->get_entity()->get_component<Transform2DComponent>();
+    Entity *parent = this->get_entity()->get_parent();
+    if (parent != nullptr) {
+        Transform2DComponent *parent_transform = parent->get_component<Transform2DComponent>();
 
-    if (parent_transform == nullptr) {
-        return;
+        if (parent_transform != nullptr) {
+            parent_transform->remove_update_callback(this->_update_origin_callback);
+        }
     }
-
-    parent_transform->remove_update_callback(new std::function<void(Transform2DComponent *)>(
-        [this](Transform2DComponent *parent_transform) { this->_on_parent_transform_updated(parent_transform); }));
 }
 
 void Transform2DComponent::set_local_position(Vector2 position) {
@@ -147,6 +159,23 @@ void Transform2DComponent::scale(float scale) {
     this->_local_scale = Vector2Scale(this->_local_scale, scale);
 
     this->_update_world_scale();
+    this->_notify_update();
+}
+
+void Transform2DComponent::_update_origin(Transform2DComponent *parent_transform) {
+    this->_update_origin_callback = new std::function<void(Transform2DComponent *)>(
+        [this](Transform2DComponent *parent_transform) { this->_on_parent_transform_updated(parent_transform); });
+
+    parent_transform->add_update_callback(this->_update_origin_callback);
+
+    this->_origin_position = parent_transform->get_world_position();
+    this->_origin_rotation = parent_transform->get_world_rotation();
+    this->_origin_scale = parent_transform->get_world_scale();
+
+    this->_update_world_position();
+    this->_update_world_rotation();
+    this->_update_world_scale();
+
     this->_notify_update();
 }
 

@@ -1,4 +1,5 @@
 #include "../../include/entities/entity.h"
+#include <iostream>
 
 unsigned int Entity::_next_id = 0;
 
@@ -66,6 +67,8 @@ void Entity::add_child(Entity *entity) {
     entity->set_auto_managed(this->_auto_managed);
     entity->set_engine_core(this->_engine_core);
     this->_children->add(entity);
+
+    entity->on_parent_add();
 }
 
 bool Entity::has_child(Entity *entity) { return this->_children->contains(entity); }
@@ -220,6 +223,8 @@ bool Entity::remove_child(Entity *entity) {
         return false;
     }
 
+    entity->on_parent_remove();
+
     if (this->_children->remove(entity)) {
         entity->remove_all_children();
         delete entity;
@@ -298,12 +303,17 @@ bool Entity::remove_descendant(std::string entity_name) {
     return false;
 }
 
-bool Entity::remove_reference_to_child(Entity *entity) { return this->_children->remove(entity); }
+bool Entity::remove_reference_to_child(Entity *entity) {
+    entity->on_parent_remove();
+
+    return this->_children->remove(entity);
+}
 
 Entity *Entity::remove_reference_to_child(unsigned int entity_id) {
     for (unsigned int i = 0; i < this->_children->get_size(); i++) {
         Entity *entity = this->_children->nullable_at(i);
         if (entity != nullptr && entity->get_id() == entity_id) {
+            entity->on_parent_remove();
             this->_children->nullable_remove_at(i);
             return entity;
         }
@@ -316,6 +326,7 @@ Entity *Entity::remove_reference_to_child(std::string entity_name) {
     for (unsigned int i = 0; i < this->_children->get_size(); i++) {
         Entity *entity = this->_children->nullable_at(i);
         if (entity != nullptr && entity->get_name() == entity_name) {
+            entity->on_parent_remove();
             this->_children->nullable_remove_at(i);
             return entity;
         }
@@ -374,6 +385,7 @@ void Entity::remove_all_children() {
     for (unsigned int i = 0; i < this->_children->get_size(); i++) {
         Entity *child = this->_children->nullable_at(i);
         if (child != nullptr && child->is_auto_managed()) {
+            child->on_parent_remove();
             child->remove_all_children();
             delete child;
         }
@@ -382,7 +394,16 @@ void Entity::remove_all_children() {
     this->_children->clear();
 }
 
-void Entity::remove_references_to_all_children() { this->_children->clear(); }
+void Entity::remove_references_to_all_children() {
+    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
+        Entity *child = this->_children->nullable_at(i);
+        if (child != nullptr) {
+            child->on_parent_remove();
+        }
+    }
+
+    this->_children->clear();
+}
 
 bool Entity::remove() {
     if (this->_parent != nullptr) {
@@ -441,6 +462,8 @@ Component *Entity::get_component_at(unsigned int index) { return this->_componen
 Component *Entity::get_component(const std::type_info &type_info) {
     for (unsigned int i = 0; i < this->_components->get_size(); i++) {
         if (this->_components->nullable_at(i) != nullptr && typeid(*this->_components->nullable_at(i)) == type_info) {
+            std::cout << "Found component of type " << type_info.name() << std::endl;
+            std::cout << "Entity name: " << this->_name << std::endl;
             return this->_components->nullable_at(i);
         }
     }
@@ -544,4 +567,24 @@ void Entity::remove_all_components() {
     }
 
     this->_components->clear();
+}
+
+void Entity::on_parent_add() {
+    for (unsigned int i = 0; i < this->_components->get_size(); i++) {
+        Component *component = this->_components->nullable_at(i);
+
+        if (component != nullptr) {
+            component->on_entity_parent_added(this->_parent);
+        }
+    }
+}
+
+void Entity::on_parent_remove() {
+    for (unsigned int i = 0; i < this->_components->get_size(); i++) {
+        Component *component = this->_components->nullable_at(i);
+
+        if (component != nullptr) {
+            component->on_entity_parent_removed(this->_parent);
+        }
+    }
 }
