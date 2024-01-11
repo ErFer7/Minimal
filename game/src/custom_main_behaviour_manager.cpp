@@ -8,6 +8,14 @@ void CustomMainBehaviourManager::init() {
     this->get_engine_core()->get_entity_manager()->add_entity(red_entity);
     this->get_engine_core()->get_entity_manager()->add_entity(green_entity);
     this->get_engine_core()->get_entity_manager()->add_entity(blue_entity);
+
+    Transform2DComponent *red_transform = red_entity->get_transform_component();
+    Transform2DComponent *green_transform = green_entity->get_transform_component();
+    Transform2DComponent *blue_transform = blue_entity->get_transform_component();
+
+    red_transform->set_local_position(Vector2{10.0f, 0.0f});
+    green_transform->set_local_position(Vector2{0.0f, 10.0f});
+    blue_transform->set_local_position(Vector2{10.0f, 10.0f});
 }
 
 void CustomMainBehaviourManager::update() {}

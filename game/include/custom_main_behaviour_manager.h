@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../engine/minimal.h"
+#include "raymath.h"
 
 class CustomMainBehaviourManager : public MainBehaviourManager {
    public:

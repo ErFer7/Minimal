@@ -15,6 +15,7 @@ class Entity {
    public:
     Entity(std::string name = "", bool auto_managed = true);
     ~Entity();
+
     inline unsigned int get_id() { return this->_id; }
     inline bool is_active() const { return this->_active; }
     inline bool is_auto_managed() const { return this->_auto_managed; }

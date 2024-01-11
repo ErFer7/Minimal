@@ -7,6 +7,7 @@ class BehaviourComponent : public ManagedComponent {
    public:
     BehaviourComponent(bool unique, std::string name = "") : ManagedComponent(unique, name) {}
     ~BehaviourComponent() override = default;
+
     virtual void update() = 0;
 
    protected:

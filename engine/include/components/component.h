@@ -9,6 +9,7 @@ class Component {
    public:
     Component(bool unique, std::string name = "");
     virtual ~Component() = default;
+
     inline std::string get_name() const { return this->_name; }
     inline void set_name(std::string name) { this->_name = name; }
     inline bool is_active() const { return this->_active; }

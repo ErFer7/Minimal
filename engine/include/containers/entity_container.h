@@ -13,6 +13,7 @@ class EntityContainer {
    public:
     EntityContainer(EngineCore *engine_core);
     ~EntityContainer();
+
     void add_entity(Entity *entity);
     void remove_all_entities();
     Entity *find_entity(unsigned int entity_id);

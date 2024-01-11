@@ -9,6 +9,7 @@ class ComponentManager : public Manager {
    public:
     ComponentManager(EngineCore *engine_core);
     ~ComponentManager() override;
+
     inline void update() override { this->_components->optimize(); };
 
    protected:

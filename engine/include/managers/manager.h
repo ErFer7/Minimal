@@ -9,6 +9,7 @@ class Manager {
    public:
     Manager(EngineCore *engine_core) : _engine_core(engine_core) {}
     virtual ~Manager() = default;
+
     virtual void init() = 0;
     virtual void update() = 0;
     virtual void exit() = 0;

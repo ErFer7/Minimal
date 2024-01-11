@@ -10,6 +10,7 @@ class PhysicsManager : public ComponentManager {
    public:
     PhysicsManager(EngineCore *engine_core) : ComponentManager(engine_core){};
     ~PhysicsManager() override = default;
+
     void init() override;
     void update() override;
     void exit() override;

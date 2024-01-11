@@ -11,6 +11,7 @@ class Transform2DComponent : public Component {
    public:
     Transform2DComponent(std::string name = "");
     ~Transform2DComponent() override;
+
     inline Vector2 get_local_position() const { return this->_local_position; }
     inline float get_local_rotation() const { return this->_local_rotation; }
     inline Vector2 get_local_scale() const { return this->_local_scale; }
