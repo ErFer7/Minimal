@@ -6,14 +6,15 @@
 #include "../components/component.h"
 #include "../components/managed_component.h"
 #include "../utils/dynamic_array.h"
+#include "../utils/engine_core_dependent_injector.h"
 
 class EngineCore;
 
 class Component;
 
-class Entity {
+class Entity : public EngineCoreDependentInjector {
    public:
-    Entity(std::string name = "", bool auto_managed = true);
+    Entity(EngineCore *engine_core, std::string name = "", bool auto_managed = true);
     ~Entity();
 
     inline unsigned int get_id() { return this->_id; }
@@ -30,8 +31,6 @@ class Entity {
     inline DynamicArrayIterator<Component *> *get_components_iterator() {
         return new DynamicArrayIterator<Component *>(this->_components);
     }
-    inline EngineCore *get_engine_core() { return this->_engine_core; }
-    inline void set_engine_core(EngineCore *engine_core) { this->_engine_core = engine_core; }
     void set_active(bool is_active);
     void set_auto_managed(bool auto_managed);
     void reparent(Entity *parent);
@@ -108,5 +107,4 @@ class Entity {
     Entity *_parent;
     DynamicArray<Entity *> *_children;
     DynamicArray<Component *> *_components;
-    EngineCore *_engine_core;
 };

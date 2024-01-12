@@ -1,6 +1,6 @@
 #include "../../include/components/transform2D_component.h"
 
-Transform2DComponent::Transform2DComponent(std::string name) : Component(true, name) {
+Transform2DComponent::Transform2DComponent(EngineCore *engine_core, std::string name) : Component(engine_core, true, name) {
     this->_local_position = Vector2Zero();
     this->_local_rotation = 0.0f;
     this->_local_scale = Vector2One();

@@ -9,7 +9,7 @@
 
 class Transform2DComponent : public Component {
    public:
-    Transform2DComponent(std::string name = "");
+    Transform2DComponent(EngineCore *engine_core, std::string name = "");
     ~Transform2DComponent() override;
 
     inline Vector2 get_local_position() const { return this->_local_position; }

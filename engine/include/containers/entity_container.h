@@ -4,12 +4,13 @@
 
 #include "../entities/entity.h"
 #include "../utils/dynamic_array.h"
+#include "../utils/engine_core_dependent_injector.h"
 
 class EngineCore;
 
 class Entity;
 
-class EntityContainer {
+class EntityContainer : public EngineCoreDependentInjector {
    public:
     EntityContainer(EngineCore *engine_core);
     ~EntityContainer();

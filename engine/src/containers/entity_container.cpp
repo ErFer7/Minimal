@@ -1,8 +1,7 @@
 #include "../../include/containers/entity_container.h"
 
-EntityContainer::EntityContainer(EngineCore *engine_core) {
-    this->_root = new Entity("Global Root");
-    this->_root->set_engine_core(engine_core);
+EntityContainer::EntityContainer(EngineCore *engine_core) : EngineCoreDependentInjector(engine_core) {
+    this->_root = this->create<Entity>("Global Root");
 }
 
 EntityContainer::~EntityContainer() {

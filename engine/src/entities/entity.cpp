@@ -1,9 +1,10 @@
 #include "../../include/entities/entity.h"
+
 #include <iostream>
 
 unsigned int Entity::_next_id = 0;
 
-Entity::Entity(std::string name, bool auto_managed) {
+Entity::Entity(EngineCore *engine_core, std::string name, bool auto_managed) : EngineCoreDependentInjector(engine_core) {
     this->_id = _next_id++;
     this->_name = name;
     this->_active = true;
@@ -65,7 +66,6 @@ void Entity::add_child(Entity *entity) {
     entity->set_parent(this);
     entity->set_active(this->_active);
     entity->set_auto_managed(this->_auto_managed);
-    entity->set_engine_core(this->_engine_core);
     this->_children->add(entity);
 
     entity->on_parent_add();
@@ -424,7 +424,6 @@ bool Entity::remove_reference() {
 void Entity::add_component(Component *component) {
     if (component->is_unique() && !this->has_component(typeid(*component))) {
         component->set_entity(this);
-        component->set_engine_core(this->_engine_core);
 
         if (dynamic_cast<ManagedComponent *>(component) != nullptr) {
             ManagedComponent *managed_component = static_cast<ManagedComponent *>(component);

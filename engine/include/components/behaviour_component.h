@@ -5,7 +5,7 @@
 
 class BehaviourComponent : public ManagedComponent {
    public:
-    BehaviourComponent(bool unique, std::string name = "") : ManagedComponent(unique, name) {}
+    BehaviourComponent(EngineCore *engine_core, bool unique, std::string name = "") : ManagedComponent(engine_core, unique, name) {}
     ~BehaviourComponent() override = default;
 
     virtual void update() = 0;

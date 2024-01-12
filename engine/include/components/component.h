@@ -2,12 +2,14 @@
 
 #include <string>
 
+#include "../utils/engine_core_dependent_injector.h"
+
 class EngineCore;
 class Entity;
 
-class Component {
+class Component : public EngineCoreDependentInjector {
    public:
-    Component(bool unique, std::string name = "");
+    Component(EngineCore *engine_core, bool unique, std::string name = "");
     virtual ~Component() = default;
 
     inline std::string get_name() const { return this->_name; }
@@ -15,10 +17,8 @@ class Component {
     inline bool is_active() const { return this->_active; }
     inline void set_active(bool active) { this->_active = active; }
     inline bool is_unique() const { return this->_unique; }
-    inline EngineCore *get_engine_core() { return this->_engine_core; }
-    inline void set_engine_core(EngineCore *engine_core) { this->_engine_core = engine_core; }
-    inline Entity *get_entity() { return this->_entity; }
-    inline void set_entity(Entity *entity) { this->_entity = entity; }
+    inline Entity *get_entity() { return this->_entity_ref; }
+    inline void set_entity(Entity *entity) { this->_entity_ref = entity; }
     virtual void on_add_to_entity() = 0;
     virtual void on_remove_from_entity() = 0;
     virtual void on_entity_parent_added(Entity *parent) = 0;
@@ -28,6 +28,5 @@ class Component {
     std::string _name;
     bool _active;
     bool _unique;
-    EngineCore *_engine_core;
-    Entity *_entity;
+    Entity *_entity_ref;
 };

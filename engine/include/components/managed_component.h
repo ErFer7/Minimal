@@ -4,7 +4,7 @@
 
 class ManagedComponent : public Component {
    public:
-    ManagedComponent(bool unique, std::string name = "") : Component(unique, name) {}
+    ManagedComponent(EngineCore *engine_core, bool unique, std::string name = "") : Component(engine_core, unique, name) {}
     ~ManagedComponent() override = default;
 
    protected:

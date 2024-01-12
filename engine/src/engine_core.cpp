@@ -57,9 +57,9 @@ GraphicsManager *EngineCore::get_graphics_manager() { return this->_graphics_man
 
 void EngineCore::init_main_loop() {
     this->_behaviour_manager->init();
-    this->_main_behaviour_manager->init();
     this->_physics_manager->init();
     this->_graphics_manager->init();
+    this->_main_behaviour_manager->init();
 
     while (!WindowShouldClose()) {
         this->_main_behaviour_manager->update();
@@ -68,8 +68,8 @@ void EngineCore::init_main_loop() {
         this->_graphics_manager->update();
     }
 
+    this->_main_behaviour_manager->exit();
     this->_graphics_manager->exit();
     this->_physics_manager->exit();
-    this->_main_behaviour_manager->exit();
     this->_behaviour_manager->exit();
 }

@@ -6,7 +6,7 @@
 
 class Entity2D : public Entity {
    public:
-    Entity2D(std::string name = "", bool auto_managed = true);
+    Entity2D(EngineCore *engine_core, std::string name = "", bool auto_managed = true);
     ~Entity2D() = default;
 
     inline Transform2DComponent *get_transform_component() {
