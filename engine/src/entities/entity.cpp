@@ -422,7 +422,7 @@ bool Entity::remove_reference() {
 }
 
 void Entity::add_component(Component *component) {
-    if (component->is_unique() && !this->has_component(typeid(*component))) {
+    if (!component->is_unique() || !this->has_component(typeid(*component))) {
         component->set_entity(this);
 
         if (dynamic_cast<ManagedComponent *>(component) != nullptr) {
@@ -562,6 +562,7 @@ void Entity::remove_all_components() {
             }
 
             delete component;
+            this->_components->nullable_remove_at(i);
         }
     }
 

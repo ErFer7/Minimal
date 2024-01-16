@@ -6,8 +6,8 @@
 - [x] Entities
 - [x] Main logic support
 - [x] Component logic support
-- [ ] Physics
 - [ ] Rendering
+- [ ] Physics
 - [ ] Resource loading and caching
 - [ ] Inputs
 - [ ] User interface
@@ -16,6 +16,7 @@
 
 ## v1.1
 
+- [ ] Memory optimizations and smart pointers
 - [ ] Event system
 - [ ] Better physics and physics areas support
 - [ ] _Mini Dungeon_ remaster
@@ -32,3 +33,7 @@
 ## v1.4
 
 - [ ] Windows support
+
+## 1.5
+
+- [ ] Web support

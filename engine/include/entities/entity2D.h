@@ -10,9 +10,13 @@ class Entity2D : public Entity {
     ~Entity2D() = default;
 
     inline Transform2DComponent *get_transform_component() {
-        return static_cast<Transform2DComponent *>(this->get_component<Transform2DComponent>());
+        return this->_transform_component;
     }
     inline Graphics2DComponent *get_graphics_component() {
-        return static_cast<Graphics2DComponent *>(this->get_component<Graphics2DComponent>());
+        return this->_graphics_component;
     }
+
+   private:
+    Transform2DComponent *_transform_component;
+    Graphics2DComponent *_graphics_component;
 };

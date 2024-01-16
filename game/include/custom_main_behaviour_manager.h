@@ -9,4 +9,8 @@ class CustomMainBehaviourManager : public MainBehaviourManager {
     void init() final;
     void update() final;
     void exit() final;
+
+   private:
+    Entity2D *_player;
+    Entity2D *_ground;
 };

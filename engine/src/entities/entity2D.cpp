@@ -2,6 +2,9 @@
 
 Entity2D::Entity2D(EngineCore *engine_core, std::string name, bool auto_managed)
     : Entity(engine_core, name, auto_managed) {
-    this->add_component(this->create<Transform2DComponent>());
-    this->add_component(this->create<Graphics2DComponent>());
+    this->_transform_component = this->create<Transform2DComponent>();
+    this->_graphics_component = this->create<Graphics2DComponent>();
+
+    this->add_component(this->_transform_component);
+    this->add_component(this->_graphics_component);
 }

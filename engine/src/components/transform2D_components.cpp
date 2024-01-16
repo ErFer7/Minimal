@@ -1,6 +1,7 @@
 #include "../../include/components/transform2D_component.h"
 
-Transform2DComponent::Transform2DComponent(EngineCore *engine_core, std::string name) : Component(engine_core, true, name) {
+Transform2DComponent::Transform2DComponent(EngineCore *engine_core, std::string name)
+    : Component(engine_core, true, name) {
     this->_local_position = Vector2Zero();
     this->_local_rotation = 0.0f;
     this->_local_scale = Vector2One();
@@ -39,6 +40,10 @@ void Transform2DComponent::on_entity_parent_added(Entity *parent) {
     Transform2DComponent *parent_transform = parent->get_component<Transform2DComponent>();
 
     if (parent_transform != nullptr) {
+        this->_update_origin_callback = new std::function<void(Transform2DComponent *)>(
+            [this](Transform2DComponent *parent_transform) { this->_on_parent_transform_updated(parent_transform); });
+
+        parent_transform->add_update_callback(this->_update_origin_callback);
         this->_update_origin(parent_transform);
     }
 }
@@ -58,6 +63,12 @@ void Transform2DComponent::on_add_to_entity() {
         Transform2DComponent *parent_transform = parent->get_component<Transform2DComponent>();
 
         if (parent_transform != nullptr) {
+            this->_update_origin_callback =
+                new std::function<void(Transform2DComponent *)>([this](Transform2DComponent *parent_transform) {
+                    this->_on_parent_transform_updated(parent_transform);
+                });
+
+            parent_transform->add_update_callback(this->_update_origin_callback);
             this->_update_origin(parent_transform);
         }
     }
@@ -163,11 +174,6 @@ void Transform2DComponent::scale(float scale) {
 }
 
 void Transform2DComponent::_update_origin(Transform2DComponent *parent_transform) {
-    this->_update_origin_callback = new std::function<void(Transform2DComponent *)>(
-        [this](Transform2DComponent *parent_transform) { this->_on_parent_transform_updated(parent_transform); });
-
-    parent_transform->add_update_callback(this->_update_origin_callback);
-
     this->_origin_position = parent_transform->get_world_position();
     this->_origin_rotation = parent_transform->get_world_rotation();
     this->_origin_scale = parent_transform->get_world_scale();

@@ -24,6 +24,9 @@ void GraphicsManager::init() {
     if (this->_fullscreen) {
         ToggleFullscreen();
     }
+
+    // TODO: Set this
+    // SetTargetFPS(500);
 }
 
 void GraphicsManager::update() {
@@ -31,14 +34,17 @@ void GraphicsManager::update() {
 
     BeginDrawing();
     ClearBackground(BLACK);
+    DrawFPS(GetScreenWidth() - 95, 10);  // TODO: Make this optional
 
     for (unsigned int i = 0; i < components->get_size(); i++) {
         Graphics2DComponent *graphics2D_component = static_cast<Graphics2DComponent *>(components->nullable_at(i));
 
         if (graphics2D_component != nullptr && graphics2D_component->is_active()) {
-            // TODO: Implement
+            graphics2D_component->draw();
         }
     }
+
+    DrawCircle(100, 100, 5, RED);
 
     EndDrawing();
 }
