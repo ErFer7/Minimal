@@ -21,22 +21,30 @@ class GraphicsManager;
 class EngineCore {
    public:
     /**
-     * @brief Constructor for EngineCore.
+     * @brief Construct a new EngineCore object.
      * @param screen_width The width of the screen.
      * @param screen_height The height of the screen.
      * @param title The title of the window.
-     * @param resizable Flag indicating whether the window is resizable (default: false).
-     * @param fullscreen Flag indicating whether the window is fullscreen (default: false).
+     * @param target_fps The target FPS of the game.
+     * @param resizable Whether the window is resizable.
+     * @param fullscreen Whether the window is fullscreen.
+     * @param show_fps Whether to show the FPS counter.
      */
-    EngineCore(int screen_width, int screen_height, const char *title, bool resizable = false, bool fullscreen = false);
+    EngineCore(int screen_width,
+               int screen_height,
+               const char *title,
+               int target_fps = 60,
+               bool resizable = false,
+               bool fullscreen = false,
+               bool show_fps = false);
 
     ~EngineCore();
 
     /**
-     * @brief Get the entity manager.
+     * @brief Get the entity container.
      * @return A pointer to the EntityContainer object.
      */
-    EntityContainer *get_entity_manager();
+    EntityContainer *get_entity_container();
 
     /**
      * @brief Get the main behaviour manager.
@@ -74,7 +82,7 @@ class EngineCore {
     void init_main_loop();
 
    private:
-    EntityContainer *_entity_manager;
+    EntityContainer *_entity_container;
     MainBehaviourManager *_main_behaviour_manager;
     BehaviourManager *_behaviour_manager;
     PhysicsManager *_physics_manager;

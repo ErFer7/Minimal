@@ -1,7 +1,5 @@
 #include "../../include/entities/entity.h"
 
-#include <iostream>
-
 unsigned int Entity::_next_id = 0;
 
 Entity::Entity(EngineCore *engine_core, std::string name, bool auto_managed) : EngineCoreDependentInjector(engine_core) {
@@ -461,8 +459,6 @@ Component *Entity::get_component_at(unsigned int index) { return this->_componen
 Component *Entity::get_component(const std::type_info &type_info) {
     for (unsigned int i = 0; i < this->_components->get_size(); i++) {
         if (this->_components->nullable_at(i) != nullptr && typeid(*this->_components->nullable_at(i)) == type_info) {
-            std::cout << "Found component of type " << type_info.name() << std::endl;
-            std::cout << "Entity name: " << this->_name << std::endl;
             return this->_components->nullable_at(i);
         }
     }

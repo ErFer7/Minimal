@@ -4,13 +4,13 @@
 
 #include "../components/behaviour_component.h"
 #include "../engine_core.h"
-#include "component_manager.h"
+#include "unordered_component_manager.h"
 
 class BehaviourComponent;
 
-class BehaviourManager : public ComponentManager {
+class BehaviourManager : public UnorderedComponentManager {
    public:
-    BehaviourManager(EngineCore *engine_core) : ComponentManager(engine_core){};
+    BehaviourManager(EngineCore *engine_core) : UnorderedComponentManager(engine_core){};
     ~BehaviourManager() override = default;
 
     void init() override;

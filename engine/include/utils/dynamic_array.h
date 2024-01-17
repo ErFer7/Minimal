@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iostream>
 
 template <typename T>
 class DynamicArray {
@@ -19,6 +20,7 @@ class DynamicArray {
     ~DynamicArray() {
         if (this->_array != nullptr) {
             delete[] this->_array;
+            this->_array = nullptr;
         }
     }
 
@@ -104,6 +106,7 @@ class DynamicArray {
             if (this->_next_index < this->_size) {
                 if (this->_array[this->_next_index] == this->_empty_element) {
                     this->_array[this->_next_index] = element;
+                    this->_element_count++;
                     this->_next_index++;
                     return;
                 }
@@ -239,23 +242,40 @@ class DynamicArray {
         return elements;
     }
 
-    void optimize() {
+    bool optimize() {
         unsigned int excess_sections = (this->_size - this->_element_count) / this->_section_size;
 
-        if (excess_sections > 0) {
-            unsigned int new_size = this->_size / this->_section_size - excess_sections;
+        if (excess_sections > 0 && this->_element_count > 0) {
+            unsigned int new_size = (this->_size / this->_section_size - excess_sections) * this->_section_size;
+
             T *new_array = new T[new_size];
+
+            unsigned int counted_index = 0;
 
             for (unsigned int i = 0; i < this->_size; i++) {
                 if (this->_array[i] != this->_empty_element) {
-                    new_array[i] = this->_array[i];
+                    new_array[counted_index] = this->_array[i];
+                    counted_index++;
                 }
+            }
+
+            for (unsigned int i = counted_index; i < new_size; i++) {
+                new_array[i] = this->_empty_element;
             }
 
             delete[] this->_array;
             this->_array = new_array;
             this->_size = new_size;
+
+            return true;
         }
+
+        return false;
+    }
+
+    template <typename Compare>
+    void sort(Compare comp) {
+        std::sort(this->_array, this->_array + this->_size, comp);
     }
 
     inline unsigned int get_size() { return this->_size; };

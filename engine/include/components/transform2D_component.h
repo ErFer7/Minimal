@@ -4,6 +4,7 @@
 
 #include "../entities/entity.h"
 #include "../utils/dynamic_array.h"
+#include "../utils/transform_system2D.h"
 #include "component.h"
 #include "raymath.h"
 
@@ -12,12 +13,14 @@ class Transform2DComponent : public Component {
     Transform2DComponent(EngineCore *engine_core, std::string name = "");
     ~Transform2DComponent() override;
 
-    inline Vector2 get_local_position() const { return this->_local_position; }
-    inline float get_local_rotation() const { return this->_local_rotation; }
-    inline Vector2 get_local_scale() const { return this->_local_scale; }
-    inline Vector2 get_world_position() { return this->_world_position; }
-    inline float get_world_rotation() { return this->_world_rotation; }
-    inline Vector2 get_world_scale() { return this->_world_scale; }
+    inline Vector2 get_local_position() const { return this->_transform_system->get_offset_position(); }
+    inline float get_local_rotation() const { return this->_transform_system->get_offset_rotation(); }
+    inline Vector2 get_local_scale() const { return this->_transform_system->get_offset_scale(); }
+    inline Vector2 get_world_position() { return this->_transform_system->get_result_position(); }
+    inline float get_world_rotation() { return this->_transform_system->get_result_rotation(); }
+    inline Vector2 get_world_scale() { return this->_transform_system->get_result_scale(); }
+    inline Transform2D get_local_transform() { return this->_transform_system->get_offset(); }
+    inline Transform2D get_world_transform() { return this->_transform_system->get_result(); }
     inline void add_update_callback(std::function<void(Transform2DComponent *)> *callback) {
         this->_update_callbacks->add(callback);
     }
@@ -42,22 +45,10 @@ class Transform2DComponent : public Component {
     void scale(float scale);
 
    private:
-    Vector2 _local_position;
-    float _local_rotation;
-    Vector2 _local_scale;
-    Vector2 _world_position;
-    float _world_rotation;
-    Vector2 _world_scale;
-    Vector2 _origin_position;
-    float _origin_rotation;
-    Vector2 _origin_scale;
+    TransformSystem2D *_transform_system;
     std::function<void(Transform2DComponent *)> *_update_origin_callback;
     DynamicArray<std::function<void(Transform2DComponent *)> *> *_update_callbacks;
 
-    void _update_origin(Transform2DComponent *parent_transform);
-    void _update_world_position();
-    void _update_world_rotation();
-    void _update_world_scale();
     void _notify_update();
     void _on_parent_transform_updated(Transform2DComponent *parent_transform);
 };

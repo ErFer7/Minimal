@@ -32,23 +32,27 @@
 class MinimalEngine {
    public:
     /**
-     * Executes the engine with the specified screen width, screen height, title, and optional parameters.
+     * Executes the engine with the specified parameters.
      *
      * @param screen_width The width of the screen.
      * @param screen_height The height of the screen.
      * @param title The title of the window.
-     * @param resizable (Optional) Whether the window is resizable. Default is false.
-     * @param fullscreen (Optional) Whether the window is fullscreen. Default is false.
+     * @param target_fps The target frames per second (default is 60).
+     * @param resizable Whether the window is resizable or not (default is false).
+     * @param fullscreen Whether the window is fullscreen or not (default is false).
+     * @param show_fps Whether to show the frames per second on the window (default is false).
      */
     template <typename T>
     static void execute(int screen_width,
                         int screen_height,
                         const char *title,
+                        int target_fps = 60,
                         bool resizable = false,
-                        bool fullscreen = false) {
+                        bool fullscreen = false,
+                        bool show_fps = false) {
         static_assert(std::is_base_of<MainBehaviourManager, T>::value, "T must be a type of MainBehaviourManager");
 
-        _engine_core = new EngineCore(screen_width, screen_height, title, resizable, fullscreen);
+        _engine_core = new EngineCore(screen_width, screen_height, title, target_fps, resizable, fullscreen, show_fps);
         T *main_behaviour_manager = new T(_engine_core);
 
         _engine_core->set_main_behaviour_manager(main_behaviour_manager);

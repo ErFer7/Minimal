@@ -3,19 +3,21 @@
 EngineCore::EngineCore(int screen_width,
                        int screen_height,
                        const char *title,
+                       int target_fps,
                        bool resizable,
-                       bool fullscreen) {
-    this->_entity_manager = new EntityContainer(this);
+                       bool fullscreen,
+                       bool show_fps) {
+    this->_entity_container = new EntityContainer(this);
     this->_main_behaviour_manager = nullptr;
     this->_behaviour_manager = new BehaviourManager(this);
     this->_physics_manager = new PhysicsManager(this);
-    this->_graphics_manager = new GraphicsManager(this, screen_width, screen_height, title, resizable, fullscreen);
+    this->_graphics_manager = new GraphicsManager(this, screen_width, screen_height, title, target_fps, resizable, fullscreen, show_fps);
 }
 
 EngineCore::~EngineCore() {
-    if (this->_entity_manager != nullptr) {
-        delete this->_entity_manager;
-        this->_entity_manager = nullptr;
+    if (this->_entity_container != nullptr) {
+        delete this->_entity_container;
+        this->_entity_container = nullptr;
     }
 
     if (this->_main_behaviour_manager != nullptr) {
@@ -41,7 +43,7 @@ EngineCore::~EngineCore() {
 
 // TODO: See if this can be inlined
 
-EntityContainer *EngineCore::get_entity_manager() { return this->_entity_manager; }
+EntityContainer *EngineCore::get_entity_container() { return this->_entity_container; }
 
 MainBehaviourManager *EngineCore::get_main_behaviour_manager() { return this->_main_behaviour_manager; }
 

@@ -2,15 +2,7 @@
 
 Transform2DComponent::Transform2DComponent(EngineCore *engine_core, std::string name)
     : Component(engine_core, true, name) {
-    this->_local_position = Vector2Zero();
-    this->_local_rotation = 0.0f;
-    this->_local_scale = Vector2One();
-    this->_world_position = Vector2Zero();
-    this->_world_rotation = 0.0f;
-    this->_world_scale = Vector2One();
-    this->_origin_position = Vector2Zero();
-    this->_origin_rotation = 0.0f;
-    this->_origin_scale = Vector2One();
+    this->_transform_system = new TransformSystem2D();
     this->_update_origin_callback = nullptr;
     this->_update_callbacks = new DynamicArray<std::function<void(Transform2DComponent *)> *>();
 }
@@ -19,6 +11,11 @@ Transform2DComponent::~Transform2DComponent() {
     if (this->_update_origin_callback != nullptr) {
         delete this->_update_origin_callback;
         this->_update_origin_callback = nullptr;
+    }
+
+    if (this->_transform_system != nullptr) {
+        delete this->_transform_system;
+        this->_transform_system = nullptr;
     }
 
     if (this->_update_callbacks != nullptr) {
@@ -44,7 +41,7 @@ void Transform2DComponent::on_entity_parent_added(Entity *parent) {
             [this](Transform2DComponent *parent_transform) { this->_on_parent_transform_updated(parent_transform); });
 
         parent_transform->add_update_callback(this->_update_origin_callback);
-        this->_update_origin(parent_transform);
+        this->_on_parent_transform_updated(parent_transform);
     }
 }
 
@@ -69,7 +66,7 @@ void Transform2DComponent::on_add_to_entity() {
                 });
 
             parent_transform->add_update_callback(this->_update_origin_callback);
-            this->_update_origin(parent_transform);
+            this->_on_parent_transform_updated(parent_transform);
         }
     }
 }
@@ -86,115 +83,64 @@ void Transform2DComponent::on_remove_from_entity() {
 }
 
 void Transform2DComponent::set_local_position(Vector2 position) {
-    this->_local_position = position;
-
-    this->_update_world_position();
+    this->_transform_system->set_offset_position(position);
     this->_notify_update();
 }
 
 void Transform2DComponent::set_local_rotation(float rotation) {
-    this->_local_rotation = rotation;
-
-    this->_update_world_rotation();
+    this->_transform_system->set_offset_rotation(rotation);
     this->_notify_update();
 }
 
 void Transform2DComponent::set_local_scale(Vector2 scale) {
-    this->_local_scale = scale;
-
-    this->_update_world_scale();
+    this->_transform_system->set_offset_scale(scale);
     this->_notify_update();
 }
 
 void Transform2DComponent::set_local_scale(float scale) {
-    this->_local_scale = Vector2Scale(this->_origin_scale, scale);
-
-    this->_update_world_scale();
+    this->_transform_system->set_offset_scale(Vector2Scale(this->_transform_system->get_origin_scale(), scale));
     this->_notify_update();
 }
 
 void Transform2DComponent::set_world_position(Vector2 position) {
-    Vector2 difference = Vector2Subtract(position, this->_origin_position);
-    this->_local_position = Vector2Add(this->_local_position, difference);
-
-    this->_update_world_position();
+    this->_transform_system->set_result_position(position);
     this->_notify_update();
 }
 
 void Transform2DComponent::set_world_rotation(float rotation) {
-    this->_local_rotation += rotation - this->_origin_rotation;
-
-    this->_update_world_rotation();
+    this->_transform_system->set_result_rotation(rotation);
     this->_notify_update();
 }
 
 void Transform2DComponent::set_world_scale(Vector2 scale) {
-    Vector2 difference = Vector2Divide(scale, this->_origin_scale);
-    this->_local_scale = Vector2Multiply(this->_local_scale, difference);
-
-    this->_update_world_scale();
+    this->_transform_system->set_result_scale(scale);
     this->_notify_update();
 }
 
 void Transform2DComponent::set_world_scale(float scale) {
-    Vector2 vector_scale = Vector2Scale(this->_origin_scale, scale);
-    Vector2 difference = Vector2Divide(vector_scale, this->_origin_scale);
-    this->_local_scale = Vector2Multiply(this->_local_scale, difference);
-
-    this->_update_world_scale();
+    this->_transform_system->set_result_scale(Vector2Scale(this->_transform_system->get_origin_scale(), scale));
     this->_notify_update();
 }
 
 void Transform2DComponent::translate(Vector2 translation) {
-    this->_local_position = Vector2Add(this->_local_position, translation);
-
-    this->_update_world_position();
+    this->_transform_system->set_offset_position(
+        Vector2Add(this->_transform_system->get_offset_position(), translation));
     this->_notify_update();
 }
 
 void Transform2DComponent::rotate(float rotation) {
-    this->_local_rotation += rotation;
-
-    this->_update_world_rotation();
+    this->_transform_system->set_offset_rotation(this->_transform_system->get_offset_rotation() + rotation);
     this->_notify_update();
 }
 
 void Transform2DComponent::scale(Vector2 scale) {
-    this->_local_scale = Vector2Multiply(this->_local_scale, scale);
-
-    this->_update_world_scale();
+    this->_transform_system->set_offset_scale(Vector2Multiply(this->_transform_system->get_offset_scale(), scale));
     this->_notify_update();
 }
 
 void Transform2DComponent::scale(float scale) {
-    this->_local_scale = Vector2Scale(this->_local_scale, scale);
-
-    this->_update_world_scale();
+    this->_transform_system->set_offset_scale(Vector2Scale(this->_transform_system->get_offset_scale(), scale));
     this->_notify_update();
-}
-
-void Transform2DComponent::_update_origin(Transform2DComponent *parent_transform) {
-    this->_origin_position = parent_transform->get_world_position();
-    this->_origin_rotation = parent_transform->get_world_rotation();
-    this->_origin_scale = parent_transform->get_world_scale();
-
-    this->_update_world_position();
-    this->_update_world_rotation();
-    this->_update_world_scale();
-
-    this->_notify_update();
-}
-
-void Transform2DComponent::_update_world_position() {
-    this->_world_position = Vector2Add(this->_local_position, this->_origin_position);
-}
-
-void Transform2DComponent::_update_world_rotation() {
-    this->_world_rotation = this->_local_rotation + this->_origin_rotation;
-}
-
-void Transform2DComponent::_update_world_scale() {
-    this->_world_scale = Vector2Multiply(this->_local_scale, this->_origin_scale);
 }
 
 void Transform2DComponent::_notify_update() {
@@ -208,13 +154,6 @@ void Transform2DComponent::_notify_update() {
 }
 
 void Transform2DComponent::_on_parent_transform_updated(Transform2DComponent *parent_transform) {
-    this->_origin_position = parent_transform->get_world_position();
-    this->_origin_rotation = parent_transform->get_world_rotation();
-    this->_origin_scale = parent_transform->get_world_scale();
-
-    this->_update_world_position();
-    this->_update_world_rotation();
-    this->_update_world_scale();
-
+    this->_transform_system->set_origin(parent_transform->get_world_transform());
     this->_notify_update();
 }
