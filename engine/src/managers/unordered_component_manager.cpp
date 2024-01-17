@@ -1,7 +1,7 @@
 #include "../../include/managers/unordered_component_manager.h"
 
 UnorderedComponentManager::UnorderedComponentManager(EngineCore *engine_core) : ComponentManager(engine_core) {
-    this->_components = new DynamicArray<Component *>(256, 32);
+    this->_components = new DynamicArray<Component *>(32);
 }
 
 UnorderedComponentManager::~UnorderedComponentManager() {

@@ -19,14 +19,6 @@ Transform2DComponent::~Transform2DComponent() {
     }
 
     if (this->_update_callbacks != nullptr) {
-        for (unsigned int i = 0; i < this->_update_callbacks->get_size(); i++) {
-            std::function<void(Transform2DComponent *)> *callback = this->_update_callbacks->nullable_at(i);
-
-            if (callback != nullptr) {
-                delete callback;
-            }
-        }
-
         this->_update_callbacks->clear();
         delete this->_update_callbacks;
         this->_update_callbacks = nullptr;

@@ -8,8 +8,8 @@ Entity::Entity(EngineCore *engine_core, std::string name, bool auto_managed) : E
     this->_active = true;
     this->_auto_managed = auto_managed;
     this->_parent = nullptr;
-    this->_children = new DynamicArray<Entity *>(4, 4);
-    this->_components = new DynamicArray<Component *>(2, 2);
+    this->_children = new DynamicArray<Entity *>(4);
+    this->_components = new DynamicArray<Component *>(2);
 }
 
 Entity::~Entity() {

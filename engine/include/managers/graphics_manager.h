@@ -18,9 +18,11 @@ struct Layer {
     DynamicArray<Graphics2DComponent *> *components;
 };
 
+bool is_layer_null(Layer layer);
+
 struct Space {
     bool dirty;
-    DynamicArray<Layer *> *_layers;
+    DynamicArray<Layer> *_layers;
 };
 
 class GraphicsManager : public ComponentManager {
@@ -60,10 +62,10 @@ class GraphicsManager : public ComponentManager {
     std::unordered_map<int, SortingMode> *_world2D_space_layers_sorting_mode;
 
     void _update_layer(Graphics2DComponent *graphics2D_component, Layer *old_layer);
-    void _sort_layer_array(DynamicArray<Layer *> *array);
-    void _draw_layer_array(DynamicArray<Layer *> *array);
-    void _optimize_layer_array(DynamicArray<Layer *> *array);
-    void _clear_layer_array(DynamicArray<Layer *> *array);
+    void _sort_layer_array(DynamicArray<Layer> *array);
+    void _draw_layer_array(DynamicArray<Layer> *array);
+    void _optimize_layer_array(DynamicArray<Layer> *array);
+    void _clear_layer_array(DynamicArray<Layer> *array);
 
     friend class Graphics2DComponent;
 };

@@ -4,14 +4,26 @@
 #include <iostream>
 
 template <typename T>
+bool default_is_empty_function(T element) {
+    if (element == nullptr) {
+        return true;
+    }
+
+    return false;
+}
+
+template <typename T>
 class DynamicArray {
    public:
-    DynamicArray(unsigned int initial_size = 1, unsigned int section_size = 1, T empty_element = nullptr) {
-        this->_size = initial_size;
+    DynamicArray(unsigned int section_size = 1) : DynamicArray(section_size, nullptr, default_is_empty_function<T>) {}
+
+    DynamicArray(unsigned int section_size, T empty_element, std::function<bool(T)> is_empty_function) {
+        this->_section_size = section_size;
         this->_empty_element = empty_element;
+        this->_is_empty_function = is_empty_function;
+        this->_size = section_size;
         this->_array = new T[this->_size];
         this->_next_index = 0;
-        this->_section_size = section_size;
         this->_element_count = 0;
 
         this->fill(this->_empty_element);
@@ -26,11 +38,7 @@ class DynamicArray {
 
     inline T get_empty_element() { return this->_empty_element; }
 
-    void fill(T element) {
-        for (unsigned int i = 0; i < this->_size; i++) {
-            this->_array[i] = element;
-        }
-    }
+    void fill(T element) { std::fill(this->_array, this->_array + this->_size, element); }
 
     void clear() {
         this->fill(this->_empty_element);
@@ -55,7 +63,7 @@ class DynamicArray {
         unsigned int counted_index = 0;
 
         for (unsigned int i = 0; i < this->_size; i++) {
-            if (this->_array[i] != this->_empty_element) {
+            if (!this->_is_empty_function(this->_array[i])) {
                 if (this->_array[i] == element) {
                     return counted_index;
                 }
@@ -83,7 +91,7 @@ class DynamicArray {
         unsigned int counted_index = 0;
 
         for (unsigned int i = 0; i < this->_size; i++) {
-            if (this->_array[i] != this->_empty_element) {
+            if (!this->_is_empty_function(this->_array[i])) {
                 if (counted_index == index) {
                     return this->_array[i];
                 }
@@ -96,7 +104,7 @@ class DynamicArray {
     }
 
     void add(const T &element) {
-        if (element == this->_empty_element) {
+        if (this->_is_empty_function(element)) {
             return;
         }
 
@@ -104,7 +112,7 @@ class DynamicArray {
 
         while (true) {
             if (this->_next_index < this->_size) {
-                if (this->_array[this->_next_index] == this->_empty_element) {
+                if (this->_is_empty_function(this->_array[this->_next_index])) {
                     this->_array[this->_next_index] = element;
                     this->_element_count++;
                     this->_next_index++;
@@ -134,7 +142,7 @@ class DynamicArray {
     }
 
     bool remove(const T &element, bool optimize = true) {
-        if (element == this->_empty_element) {
+        if (this->_is_empty_function(element)) {
             return false;
         }
 
@@ -155,7 +163,7 @@ class DynamicArray {
     }
 
     bool nullable_remove_at(unsigned int index, bool optimize = true) {
-        if (this->_array[index] == this->_empty_element) {
+        if (this->_is_empty_function(this->_array[index])) {
             return false;
         }
 
@@ -173,7 +181,7 @@ class DynamicArray {
         unsigned int counted_index = 0;
 
         for (unsigned int i = 0; i < this->_size; i++) {
-            if (this->_array[i] != this->_empty_element) {
+            if (!this->_is_empty_function(this->_array[i])) {
                 if (counted_index == index) {
                     this->_array[i] = this->_empty_element;
                     this->_element_count--;
@@ -208,7 +216,7 @@ class DynamicArray {
         unsigned int counted_index = 0;
 
         for (unsigned int i = 0; i < this->_size; i++) {
-            if (this->_array[i] != this->_empty_element) {
+            if (!this->_is_empty_function(this->_array[i])) {
                 if (counted_index == index) {
                     T element = this->_array[i];
                     this->_array[i] = this->_empty_element;
@@ -233,7 +241,7 @@ class DynamicArray {
         unsigned int counted_index = 0;
 
         for (unsigned int i = 0; i < this->_size; i++) {
-            if (this->_array[i] != this->_empty_element) {
+            if (!this->_is_empty_function(this->_array[i])) {
                 elements[counted_index] = this->_array[i];
                 counted_index++;
             }
@@ -250,17 +258,15 @@ class DynamicArray {
 
             T *new_array = new T[new_size];
 
+            std::fill(new_array, new_array + new_size, this->_empty_element);
+
             unsigned int counted_index = 0;
 
             for (unsigned int i = 0; i < this->_size; i++) {
-                if (this->_array[i] != this->_empty_element) {
+                if (!this->_is_empty_function(this->_array[i])) {
                     new_array[counted_index] = this->_array[i];
                     counted_index++;
                 }
-            }
-
-            for (unsigned int i = counted_index; i < new_size; i++) {
-                new_array[i] = this->_empty_element;
             }
 
             delete[] this->_array;
@@ -281,6 +287,8 @@ class DynamicArray {
     inline unsigned int get_size() { return this->_size; };
     inline unsigned int get_element_count() { return this->_element_count; };
 
+    bool is_element_empty(T element) { return this->_is_empty_function(element); }
+
    private:
     T *_array;
     T _empty_element;
@@ -288,6 +296,7 @@ class DynamicArray {
     unsigned int _next_index;
     unsigned int _section_size;
     unsigned int _element_count;
+    std::function<bool(T)> _is_empty_function;
 };
 
 template <typename T>
@@ -317,7 +326,7 @@ class DynamicArrayIterator {
 
             T element = this->_dynamic_array->nullable_at(this->_index++);
 
-            if (element != this->_dynamic_array->get_empty_element()) {
+            if (!this->_dynamic_array->is_element_empty(element)) {
                 return element;
             }
         }

@@ -10,6 +10,7 @@ Graphics2DComponent::Graphics2DComponent(EngineCore *engine_core, std::string na
     this->_tint = WHITE;
     this->_rendering_mode = RenderingMode::WORLD_SPACE_2D;
     this->_layer = 0;
+    this->_update_transform_callback = nullptr;
 }
 
 Graphics2DComponent::~Graphics2DComponent() {
