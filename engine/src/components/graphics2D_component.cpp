@@ -87,7 +87,11 @@ void Graphics2DComponent::register_component() {
 }
 
 void Graphics2DComponent::unregister_component() {
-    this->get_engine_core()->get_graphics_manager()->unregister_component(this);
+    GraphicsManager *graphics_manager = this->get_engine_core()->get_graphics_manager();
+
+    if (graphics_manager != nullptr) {
+        graphics_manager->unregister_component(this);
+    }
 }
 
 void Graphics2DComponent::_on_transform_updated(Transform2DComponent *transform) {

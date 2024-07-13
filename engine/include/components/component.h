@@ -2,12 +2,12 @@
 
 #include <string>
 
-#include "../utils/engine_core_dependent_injector.h"
+#include "../utils/engine_core_dependency_injector.h"
 
 class EngineCore;
 class Entity;
 
-class Component : public EngineCoreDependentInjector {
+class Component : public EngineCoreDependencyInjector {
    public:
     Component(EngineCore *engine_core, bool unique, std::string name = "");
     virtual ~Component() = default;

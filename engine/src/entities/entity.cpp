@@ -1,10 +1,6 @@
 #include "../../include/entities/entity.h"
 
-unsigned int Entity::_next_id = 0;
-
-Entity::Entity(EngineCore *engine_core, std::string name, bool auto_managed) : EngineCoreDependentInjector(engine_core) {
-    this->_id = _next_id++;
-    this->_name = name;
+Entity::Entity(EngineCore *engine_core, bool auto_managed) : EngineCoreDependencyInjector(engine_core) {
     this->_active = true;
     this->_auto_managed = auto_managed;
     this->_parent = nullptr;
@@ -57,7 +53,7 @@ void Entity::set_auto_managed(bool auto_managed) {
 }
 
 void Entity::add_child(Entity *entity) {
-    if (this->has_child(entity->get_id())) {
+    if (this->has_child(entity)) {
         return;
     }
 
@@ -71,26 +67,6 @@ void Entity::add_child(Entity *entity) {
 
 bool Entity::has_child(Entity *entity) { return this->_children->contains(entity); }
 
-bool Entity::has_child(unsigned int entity_id) {
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr && this->_children->nullable_at(i)->get_id() == entity_id) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool Entity::has_child(std::string entity_name) {
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr && this->_children->nullable_at(i)->get_name() == entity_name) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 bool Entity::has_descendant(Entity *entity) {
     if (this->has_child(entity)) {
         return true;
@@ -98,35 +74,6 @@ bool Entity::has_descendant(Entity *entity) {
 
     for (unsigned int i = 0; i < this->_children->get_size(); i++) {
         if (this->_children->nullable_at(i) != nullptr && this->_children->nullable_at(i)->has_descendant(entity)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool Entity::has_descendant(unsigned int entity_id) {
-    if (this->has_child(entity_id)) {
-        return true;
-    }
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr && this->_children->nullable_at(i)->has_descendant(entity_id)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool Entity::has_descendant(std::string entity_name) {
-    if (this->has_child(entity_name)) {
-        return true;
-    }
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr &&
-            this->_children->nullable_at(i)->has_descendant(entity_name)) {
             return true;
         }
     }
@@ -154,67 +101,7 @@ Entity *Entity::get_child_at(unsigned int index) {
     return nullptr;
 }
 
-Entity *Entity::get_child(unsigned int entity_id) {
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr && this->_children->nullable_at(i)->get_id() == entity_id) {
-            return this->_children->nullable_at(i);
-        }
-    }
-
-    return nullptr;
-}
-
-Entity *Entity::get_child(std::string entity_name) {
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr && this->_children->nullable_at(i)->get_name() == entity_name) {
-            return this->_children->nullable_at(i);
-        }
-    }
-
-    return nullptr;
-}
-
 Entity **Entity::get_children() { return this->_children->get_elements(); }
-
-Entity *Entity::get_descendant(unsigned int entity_id) {
-    Entity *child = this->get_child(entity_id);
-
-    if (child != nullptr) {
-        return child;
-    }
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr) {
-            Entity *descendant = this->_children->nullable_at(i)->get_descendant(entity_id);
-
-            if (descendant != nullptr) {
-                return descendant;
-            }
-        }
-    }
-
-    return nullptr;
-}
-
-Entity *Entity::get_descendant(std::string entity_name) {
-    Entity *child = this->get_child(entity_name);
-
-    if (child != nullptr) {
-        return child;
-    }
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr) {
-            Entity *descendant = this->_children->nullable_at(i)->get_descendant(entity_name);
-
-            if (descendant != nullptr) {
-                return descendant;
-            }
-        }
-    }
-
-    return nullptr;
-}
 
 bool Entity::remove_child(Entity *entity) {
     if (!entity->is_auto_managed()) {
@@ -224,32 +111,6 @@ bool Entity::remove_child(Entity *entity) {
     entity->on_parent_remove();
 
     if (this->_children->remove(entity)) {
-        entity->remove_all_children();
-        delete entity;
-
-        return true;
-    }
-
-    return false;
-}
-
-bool Entity::remove_child(unsigned int entity_id) {
-    Entity *entity = this->remove_reference_to_child(entity_id);
-
-    if (entity != nullptr && entity->is_auto_managed()) {
-        entity->remove_all_children();
-        delete entity;
-
-        return true;
-    }
-
-    return false;
-}
-
-bool Entity::remove_child(std::string entity_name) {
-    Entity *entity = this->remove_reference_to_child(entity_name);
-
-    if (entity != nullptr && entity->is_auto_managed()) {
         entity->remove_all_children();
         delete entity;
 
@@ -273,64 +134,10 @@ bool Entity::remove_descendant(Entity *entity) {
     return false;
 }
 
-bool Entity::remove_descendant(unsigned int entity_id) {
-    if (this->remove_child(entity_id)) {
-        return true;
-    }
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i)->remove_descendant(entity_id)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool Entity::remove_descendant(std::string entity_name) {
-    if (this->remove_child(entity_name)) {
-        return true;
-    }
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i)->remove_descendant(entity_name)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 bool Entity::remove_reference_to_child(Entity *entity) {
     entity->on_parent_remove();
 
     return this->_children->remove(entity);
-}
-
-Entity *Entity::remove_reference_to_child(unsigned int entity_id) {
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        Entity *entity = this->_children->nullable_at(i);
-        if (entity != nullptr && entity->get_id() == entity_id) {
-            entity->on_parent_remove();
-            this->_children->nullable_remove_at(i);
-            return entity;
-        }
-    }
-
-    return nullptr;
-}
-
-Entity *Entity::remove_reference_to_child(std::string entity_name) {
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        Entity *entity = this->_children->nullable_at(i);
-        if (entity != nullptr && entity->get_name() == entity_name) {
-            entity->on_parent_remove();
-            this->_children->nullable_remove_at(i);
-            return entity;
-        }
-    }
-
-    return nullptr;
 }
 
 bool Entity::remove_reference_to_descendant(Entity *entity) {
@@ -345,38 +152,6 @@ bool Entity::remove_reference_to_descendant(Entity *entity) {
     }
 
     return false;
-}
-
-Entity *Entity::remove_reference_to_descendant(unsigned int entity_id) {
-    Entity *child = this->remove_reference_to_child(entity_id);
-    if (child != nullptr) {
-        return child;
-    }
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        Entity *descendant = this->_children->nullable_at(i)->remove_reference_to_descendant(entity_id);
-        if (descendant != nullptr) {
-            return descendant;
-        }
-    }
-
-    return nullptr;
-}
-
-Entity *Entity::remove_reference_to_descendant(std::string entity_name) {
-    Entity *child = this->remove_reference_to_child(entity_name);
-    if (child != nullptr) {
-        return child;
-    }
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        Entity *descendant = this->_children->nullable_at(i)->remove_reference_to_descendant(entity_name);
-        if (descendant != nullptr) {
-            return descendant;
-        }
-    }
-
-    return nullptr;
 }
 
 void Entity::remove_all_children() {
@@ -445,8 +220,7 @@ bool Entity::has_component(const std::type_info &type_info) {
 
 bool Entity::has_component(std::string component_name) {
     for (unsigned int i = 0; i < this->_components->get_size(); i++) {
-        if (this->_components->nullable_at(i) != nullptr &&
-            this->_components->nullable_at(i)->get_name() == component_name) {
+        if (this->_components->nullable_at(i) != nullptr && this->_components->nullable_at(i)->get_name() == component_name) {
             return true;
         }
     }
@@ -468,8 +242,7 @@ Component *Entity::get_component(const std::type_info &type_info) {
 
 Component *Entity::get_component(std::string component_name) {
     for (unsigned int i = 0; i < this->_components->get_size(); i++) {
-        if (this->_components->nullable_at(i) != nullptr &&
-            this->_components->nullable_at(i)->get_name() == component_name) {
+        if (this->_components->nullable_at(i) != nullptr && this->_components->nullable_at(i)->get_name() == component_name) {
             return this->_components->nullable_at(i);
         }
     }

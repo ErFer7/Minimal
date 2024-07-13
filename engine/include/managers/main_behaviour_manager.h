@@ -4,10 +4,11 @@
 
 class MainBehaviourManager : public Manager {
    public:
+    MainBehaviourManager() = default;
     MainBehaviourManager(EngineCore *engine_core) : Manager(engine_core){};
-    ~MainBehaviourManager() override{}
+    ~MainBehaviourManager() override {}
 
-    void init() override{};
-    void update() override{};
-    void exit() override{};
+    void init() override {};
+    void update() override {};
+    void exit() override {};
 };

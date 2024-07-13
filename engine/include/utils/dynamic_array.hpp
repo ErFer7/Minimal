@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm>
-#include <iostream>
+#include <functional>
 
 template <typename T>
 bool default_is_empty_function(T element) {

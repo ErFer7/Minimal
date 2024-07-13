@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "../utils/dynamic_array.h"
+#include "../utils/dynamic_array.hpp"
 #include "raylib.h"
 
 enum class ImageLoadingMode { DEFAULT, RAW, SVG, ANIM };

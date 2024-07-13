@@ -7,10 +7,11 @@ class Component;
 
 class ComponentManager : public Manager {
    public:
+    ComponentManager() = default;
     ComponentManager(EngineCore *engine_core) : Manager(engine_core){};
     ~ComponentManager() override = default;
 
-    void update() override{};
+    void update() override {};
 
    protected:
     virtual void register_component(Component *component) = 0;

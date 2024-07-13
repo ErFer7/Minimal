@@ -27,6 +27,7 @@ struct Space {
 
 class GraphicsManager : public ComponentManager {
    public:
+    GraphicsManager() = default;
     GraphicsManager(EngineCore *engine_core,
                     int screen_width,
                     int screen_height,

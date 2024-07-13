@@ -7,6 +7,7 @@ class Component;
 
 class UnorderedComponentManager : public ComponentManager {
    public:
+    UnorderedComponentManager() = default;
     UnorderedComponentManager(EngineCore *engine_core);
     ~UnorderedComponentManager() override;
 

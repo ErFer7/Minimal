@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "../engine_core.h"
+#include "../engine_core.hpp"
 #include "../utils/transform_system2D.h"
 #include "managed_component.h"
 #include "raylib.h"

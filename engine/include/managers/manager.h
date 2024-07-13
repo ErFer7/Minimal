@@ -3,13 +3,14 @@
 #include <cstddef>
 #include <typeinfo>
 
-#include "../utils/engine_core_dependent_injector.h"
+#include "../utils/engine_core_dependency_injector.h"
 
 class EngineCore;
 
-class Manager : public EngineCoreDependentInjector {
+class Manager : public EngineCoreDependencyInjector {
    public:
-    Manager(EngineCore *engine_core) : EngineCoreDependentInjector(engine_core){};
+    Manager() = default;
+    Manager(EngineCore *engine_core) : EngineCoreDependencyInjector(engine_core){};
     virtual ~Manager() = default;
 
     virtual void init() = 0;
