@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <utility>
 
 class EngineCore;
@@ -38,8 +39,8 @@ class EngineCoreDependencyInjector {
     }
 
     template <typename T, typename... Args>
-    T create_on_stack(Args &&...args) {
-        return T(this->_engine_core_ref, std::forward<Args>(args)...);
+    std::unique_ptr<T> create_unique(Args &&...args) {
+        return std::make_unique<T>(this->_engine_core_ref, std::forward<Args>(args)...);
     }
 
    private:

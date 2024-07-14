@@ -1,79 +1,71 @@
 #include "../../include/entities/entity.h"
 
-Entity::Entity(EngineCore *engine_core, bool auto_managed) : EngineCoreDependencyInjector(engine_core) {
+#include <algorithm>
+#include <cassert>
+#include <memory>
+#include <utility>
+#include <vector>
+
+Entity::Entity(EngineCore *engine_core, Entity *parent) : EngineCoreDependencyInjector(engine_core) {
     this->_active = true;
-    this->_auto_managed = auto_managed;
+    this->_ancestor_active = true;
     this->_parent = nullptr;
-    this->_children = new DynamicArray<Entity *>(4);
-    this->_components = new DynamicArray<Component *>(2);
+    this->_children = std::make_unique<ChildrenVector>();
+    this->_components = std::make_unique<ComponentsVector>();
+
+    this->set_parent(parent);
 }
 
 Entity::~Entity() {
-    this->remove_all_children();
+    this->destroy_all_children();
     this->remove_all_components();
-
-    if (this->_children != nullptr) {
-        delete this->_children;
-        this->_children = nullptr;
-    }
-
-    if (this->_components != nullptr) {
-        delete this->_components;
-        this->_components = nullptr;
-    }
 }
 
 void Entity::set_active(bool is_active) {
     this->_active = is_active;
 
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr) {
-            this->_children->nullable_at(i)->set_active(is_active);
+    for (auto &child : *this->_children) {
+        if (child != nullptr) {
+            child->_set_ancestor_active(is_active);
         }
     }
 }
 
-void Entity::reparent(Entity *parent) {
+void Entity::set_parent(Entity *parent) {
+    std::unique_ptr<Entity> child;
+
     if (this->_parent != nullptr) {
-        this->_parent->remove_reference_to_child(this);
+        unsigned int index = this->_parent->get_child_index(this);
+        child = std::move(this->_parent->_children->at(index));
+        // TODO: Call an event here
+        this->_parent->_children->erase(this->_children->begin() + index);
     }
 
     this->_parent = parent;
-    this->_parent->add_child(this);
+    this->_parent->_children->push_back(child);
 }
 
-void Entity::set_auto_managed(bool auto_managed) {
-    this->_auto_managed = auto_managed;
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr) {
-            this->_children->nullable_at(i)->set_auto_managed(auto_managed);
-        }
-    }
+bool Entity::has_child(Entity *entity) {
+    return std::find(this->_children->begin(), this->_children->end(), entity) != this->_children->end();
 }
 
-void Entity::add_child(Entity *entity) {
-    if (this->has_child(entity)) {
-        return;
+unsigned int Entity::get_child_index(Entity *entity) {
+    auto it = std::find(this->_children->begin(), this->_children->end(), entity);
+
+    if (it != this->_children->end()) {
+        return std::distance(this->_children->begin(), it);
     }
 
-    entity->set_parent(this);
-    entity->set_active(this->_active);
-    entity->set_auto_managed(this->_auto_managed);
-    this->_children->add(entity);
-
-    entity->on_parent_add();
+    return -1;
 }
-
-bool Entity::has_child(Entity *entity) { return this->_children->contains(entity); }
 
 bool Entity::has_descendant(Entity *entity) {
     if (this->has_child(entity)) {
         return true;
     }
 
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr && this->_children->nullable_at(i)->has_descendant(entity)) {
+    for (auto &child : *this->_children) {
+        if (child->has_descendant(entity)) {
             return true;
         }
     }
@@ -81,117 +73,26 @@ bool Entity::has_descendant(Entity *entity) {
     return false;
 }
 
-Entity *Entity::get_child_at(unsigned int index) {
-    if (index >= this->_children->get_element_count()) {
-        return nullptr;
-    }
-
-    unsigned int counted_index = 0;
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i) != nullptr) {
-            if (counted_index == index) {
-                return this->_children->nullable_at(i);
-            }
-
-            counted_index++;
-        }
-    }
-
-    return nullptr;
+void Entity::destroy_child(unsigned int index) {
+    Entity *child = this->_children->at(index).get();
+    child->on_parent_remove();
+    child->destroy_all_children();
+    this->_children->erase(this->_children->begin() + index);
 }
 
-Entity **Entity::get_children() { return this->_children->get_elements(); }
-
-bool Entity::remove_child(Entity *entity) {
-    if (!entity->is_auto_managed()) {
-        return false;
-    }
-
-    entity->on_parent_remove();
-
-    if (this->_children->remove(entity)) {
-        entity->remove_all_children();
-        delete entity;
-
-        return true;
-    }
-
-    return false;
-}
-
-bool Entity::remove_descendant(Entity *entity) {
-    if (this->remove_child(entity)) {
-        return true;
-    }
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i)->remove_descendant(entity)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool Entity::remove_reference_to_child(Entity *entity) {
-    entity->on_parent_remove();
-
-    return this->_children->remove(entity);
-}
-
-bool Entity::remove_reference_to_descendant(Entity *entity) {
-    if (this->remove_reference_to_child(entity)) {
-        return true;
-    }
-
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        if (this->_children->nullable_at(i)->remove_reference_to_descendant(entity)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void Entity::remove_all_children() {
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        Entity *child = this->_children->nullable_at(i);
-        if (child != nullptr && child->is_auto_managed()) {
-            child->on_parent_remove();
-            child->remove_all_children();
-            delete child;
-        }
+void Entity::destroy_all_children() {
+    for (auto &child : *this->_children) {
+        child->on_parent_remove();
+        child->destroy_all_children();
     }
 
     this->_children->clear();
 }
 
-void Entity::remove_references_to_all_children() {
-    for (unsigned int i = 0; i < this->_children->get_size(); i++) {
-        Entity *child = this->_children->nullable_at(i);
-        if (child != nullptr) {
-            child->on_parent_remove();
-        }
-    }
-
-    this->_children->clear();
-}
-
-bool Entity::remove() {
+void Entity::destroy() {
     if (this->_parent != nullptr) {
-        return this->_parent->remove_child(this);
+        this->_parent->destroy_child(this->_parent->get_child_index(this));
     }
-
-    return false;
-}
-
-bool Entity::remove_reference() {
-    if (this->_parent != nullptr) {
-        return this->_parent->remove_reference_to_child(this);
-    }
-
-    return false;
 }
 
 void Entity::add_component(Component *component) {
@@ -354,6 +255,16 @@ void Entity::on_parent_remove() {
 
         if (component != nullptr) {
             component->on_entity_parent_removed(this->_parent);
+        }
+    }
+}
+
+void Entity::_set_ancestor_active(bool ancestor_active) {
+    this->_ancestor_active = ancestor_active;
+
+    for (auto &child : *this->_children) {
+        if (child != nullptr) {
+            child->set_ancestor_active(ancestor_active);
         }
     }
 }

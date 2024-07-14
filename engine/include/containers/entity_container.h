@@ -17,9 +17,11 @@ class EntityContainer : public EngineCoreDependencyInjector {
     EntityContainer(EngineCore *engine_core);
     ~EntityContainer();
 
-    void add_entity(Entity *entity);
-    void remove_all_entities();
+    void create_entity();
+    void destroy_entity();
+
+    void destroy_all_entities();
 
    private:
-    Entity _root;
+    std::unique_ptr<Entity> _root;
 };

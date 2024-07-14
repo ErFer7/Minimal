@@ -1,7 +1,10 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <typeinfo>
+#include <utility>
+#include <vector>
 
 #include "../components/component.h"
 #include "../components/managed_component.h"
@@ -14,45 +17,56 @@ class Component;
 
 class Entity : public EngineCoreDependencyInjector {
    public:
+    typedef std::vector<std::unique_ptr<Entity>> ChildrenVector;
+    typedef std::vector<Component *> ComponentsVector;
+
+   public:
     Entity() = default;
-    Entity(EngineCore *engine_core, bool auto_managed = true);
+    Entity(const Entity &) = delete;
+    Entity(EngineCore *engine_core, Entity *parent);
     ~Entity();
 
-    inline bool is_active() const { return this->_active; }
-    inline bool is_auto_managed() const { return this->_auto_managed; }
-    inline Entity *get_parent() const { return this->_parent; }
-    inline void set_parent(Entity *parent) { this->_parent = parent; }
-    inline unsigned int get_child_count() const { return this->_children->get_element_count(); }
-    inline DynamicArrayIterator<Entity *> *get_children_iterator() { return new DynamicArrayIterator<Entity *>(this->_children); }
-    inline DynamicArrayIterator<Component *> *get_components_iterator() { return new DynamicArrayIterator<Component *>(this->_components); }
+    Entity &operator=(const Entity &) = delete;  // Prevent assignment. The entity should not be copied.
+
+    inline const bool is_active() const { return this->_ancestor_active && this->_active; }
     void set_active(bool is_active);
-    void set_auto_managed(bool auto_managed);
-    void reparent(Entity *parent);
-    void add_child(Entity *entity);
+
+    inline Entity *get_parent() const { return this->_parent; }
+    void set_parent(Entity *parent);
+
+    template <typename T = Entity, typename... Args>
+    void create_child(Args &&...args) {
+        this->_children->push_back(this->create_unique<T>(this, std::forward<Args>(args)...));
+        Entity *entity = this->_children->back().get();
+
+        entity->_set_ancestor_active(this->_ancestor_active && this->_active);
+        entity->on_parent_add();
+    }
+
     bool has_child(Entity *entity);
+    unsigned int get_child_index(Entity *entity);
+    void destroy_child(unsigned int index);
+    void destroy_all_children();
+    inline Entity *get_child(unsigned int index) { return this->_children->at(index).get(); }
+    inline unsigned int get_child_count() const { return this->_children->size(); }
+
     bool has_descendant(Entity *entity);
-    Entity *get_child_at(unsigned int index);
-    Entity **get_children();
-    bool remove_child(Entity *entity);
-    bool remove_descendant(Entity *entity);
-    bool remove_reference_to_child(Entity *entity);
-    bool remove_reference_to_descendant(Entity *entity);
-    void remove_all_children();
-    void remove_references_to_all_children();
-    bool remove();
-    bool remove_reference();
+
+    void destroy();
+
     void add_component(Component *component);
     bool has_component(const std::type_info &type_info);
     bool has_component(std::string component_name);
+    void remove_component(unsigned int index);
+    void remove_component(const std::type_info &type_info);
+    void remove_component(std::string component_name);
+    void remove_all_components();
     Component *get_component_at(unsigned int index);
     Component *get_component(const std::type_info &type_info);
     Component *get_component(std::string component_name);
     Component **get_all_components();
     Component **get_components_of_type(const std::type_info &type_info);
-    void remove_component(unsigned int index);
-    void remove_component(const std::type_info &type_info);
-    void remove_component(std::string component_name);
-    void remove_all_components();
+
     void on_parent_add();
     void on_parent_remove();
 
@@ -77,10 +91,13 @@ class Entity : public EngineCoreDependencyInjector {
     }
 
    private:
+    inline const bool _is_ancestor_active() const { return this->_ancestor_active; }
+    void _set_ancestor_active(bool parent_active);
+
+   private:
     bool _active;
-    bool _auto_managed;
-    Entity *_parent;  // TODO: Change to shared_ptr<Entity>
-    // TODO: Maybe this should be a vector
-    DynamicArray<Entity *> *_children;
-    DynamicArray<Component *> *_components;
+    bool _ancestor_active;
+    Entity *_parent;
+    std::unique_ptr<ChildrenVector> _children;
+    std::unique_ptr<ComponentsVector> _components;
 };

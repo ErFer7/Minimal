@@ -1,6 +1,6 @@
 CC = g++
 LDLIBS = -lraylib
-CFLAGS = -g -Wall -ggdb3
+CFLAGS = -g -Wall -ggdb3 -std=c++20 
 ENGINE_SRC_DIR = ./engine/src
 ENGINE_LIB_DIR = ./engine/include
 GAME_SRC_DIR = ./game/src
