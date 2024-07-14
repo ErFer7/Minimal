@@ -53,16 +53,30 @@ class Entity : public EngineCoreDependencyInjector {
 
     void destroy();
 
-    void add_component(Component *component);
+    template <typename T = Component, typename... Args>
+    void create_component(Args &&...args) {
+        // TODO: Move this pointer to the manager
+        std::unique_ptr<T> component = this->create_unique<T>(std::forward<Args>(args)...);
+
+        if (!component->is_unique() || !this->has_component<T>()) {
+            component->set_entity(this);
+
+            if (static_cast<ManagedComponent *>(component.get()) != nullptr) {
+                ManagedComponent *managed_component = static_cast<ManagedComponent *>(component);
+                managed_component->register_component();
+            }
+
+            this->_components->push_back(component.get());
+            component->on_add_to_entity();
+        }
+    }
+
     bool has_component(const std::type_info &type_info);
-    bool has_component(std::string component_name);
     void remove_component(unsigned int index);
     void remove_component(const std::type_info &type_info);
-    void remove_component(std::string component_name);
     void remove_all_components();
-    Component *get_component_at(unsigned int index);
+    Component *get_component(unsigned int index);
     Component *get_component(const std::type_info &type_info);
-    Component *get_component(std::string component_name);
     Component **get_all_components();
     Component **get_components_of_type(const std::type_info &type_info);
 
@@ -70,22 +84,22 @@ class Entity : public EngineCoreDependencyInjector {
     void on_parent_remove();
 
     template <typename T>
-    bool has_component() {
+    inline bool has_component() {
         return this->has_component(typeid(T));
     }
 
     template <typename T>
-    T *get_component() {
+    inline T *get_component() {
         return static_cast<T *>(this->get_component(typeid(T)));
     }
 
     template <typename T>
-    T **get_components_of_type() {
+    inline T **get_components_of_type() {
         return static_cast<T **>(this->get_components_of_type(typeid(T)));
     }
 
     template <typename T>
-    void remove_component() {
+    inline void remove_component() {
         this->remove_component(typeid(T));
     }
 

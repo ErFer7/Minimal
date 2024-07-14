@@ -95,23 +95,9 @@ void Entity::destroy() {
     }
 }
 
-void Entity::add_component(Component *component) {
-    if (!component->is_unique() || !this->has_component(typeid(*component))) {
-        component->set_entity(this);
-
-        if (dynamic_cast<ManagedComponent *>(component) != nullptr) {
-            ManagedComponent *managed_component = static_cast<ManagedComponent *>(component);
-            managed_component->register_component();
-        }
-
-        this->_components->add(component);
-        component->on_add_to_entity();
-    }
-}
-
 bool Entity::has_component(const std::type_info &type_info) {
-    for (unsigned int i = 0; i < this->_components->get_size(); i++) {
-        if (this->_components->nullable_at(i) != nullptr && typeid(*this->_components->nullable_at(i)) == type_info) {
+    for (auto &component : *this->_components) {
+        if (typeid(*component) == type_info) {
             return true;
         }
     }
@@ -119,31 +105,11 @@ bool Entity::has_component(const std::type_info &type_info) {
     return false;
 }
 
-bool Entity::has_component(std::string component_name) {
-    for (unsigned int i = 0; i < this->_components->get_size(); i++) {
-        if (this->_components->nullable_at(i) != nullptr && this->_components->nullable_at(i)->get_name() == component_name) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-Component *Entity::get_component_at(unsigned int index) { return this->_components->at(index); }
+Component *Entity::get_component(unsigned int index) { return this->_components->at(index); }
 
 Component *Entity::get_component(const std::type_info &type_info) {
     for (unsigned int i = 0; i < this->_components->get_size(); i++) {
         if (this->_components->nullable_at(i) != nullptr && typeid(*this->_components->nullable_at(i)) == type_info) {
-            return this->_components->nullable_at(i);
-        }
-    }
-
-    return nullptr;
-}
-
-Component *Entity::get_component(std::string component_name) {
-    for (unsigned int i = 0; i < this->_components->get_size(); i++) {
-        if (this->_components->nullable_at(i) != nullptr && this->_components->nullable_at(i)->get_name() == component_name) {
             return this->_components->nullable_at(i);
         }
     }
@@ -186,25 +152,6 @@ void Entity::remove_component(const std::type_info &type_info) {
         Component *component = this->_components->nullable_at(i);
 
         if (component != nullptr && typeid(*component) == type_info) {
-            component->on_remove_from_entity();
-
-            if (dynamic_cast<ManagedComponent *>(component) != nullptr) {
-                ManagedComponent *managed_component = static_cast<ManagedComponent *>(component);
-                managed_component->unregister_component();
-            }
-
-            delete component;
-            this->_components->nullable_remove_at(i);
-            return;
-        }
-    }
-}
-
-void Entity::remove_component(std::string component_name) {
-    for (unsigned int i = 0; i < this->_components->get_size(); i++) {
-        Component *component = this->_components->nullable_at(i);
-
-        if (component != nullptr && component->get_name() == component_name) {
             component->on_remove_from_entity();
 
             if (dynamic_cast<ManagedComponent *>(component) != nullptr) {
