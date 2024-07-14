@@ -8,7 +8,6 @@
 
 #include "../components/component.h"
 #include "../components/managed_component.h"
-#include "../utils/dynamic_array.hpp"
 #include "../utils/engine_core_dependency_injector.h"
 
 class EngineCore;
