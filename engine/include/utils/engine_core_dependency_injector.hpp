@@ -24,7 +24,7 @@ class EngineCoreDependencyInjector {
     /**
      * Retrieves the EngineCore object associated with this injector.
      */
-    inline EngineCore *get_engine_core() { return this->_engine_core_ref; }
+    inline EngineCore *get_engine_core() const { return this->_engine_core_ref; }
 
     /**
      * Creates an instance of type T with the given arguments.

@@ -38,27 +38,27 @@ class EngineCore {
     /**
      * Get the entity container.
      */
-    const EntityContainer *get_entity_container() const;
+    inline EntityContainer *get_entity_container() { return &this->_entity_container; };
 
     /**
      * Get the main behaviour manager.
      */
-    const MainBehaviourManager *get_main_behaviour_manager() const;
+    inline MainBehaviourManager *get_main_behaviour_manager() { return &this->_main_behaviour_manager; };
 
     /**
      * Get the behaviour manager.
      */
-    const BehaviourManager *get_behaviour_manager() const;
+    inline BehaviourManager *get_behaviour_manager() { return &this->_behaviour_manager; };
 
     /**
      * Get the physics manager.
      */
-    const PhysicsManager *get_physics_manager() const;
+    inline PhysicsManager *get_physics_manager() { return &this->_physics_manager; };
 
     /**
      * Get the graphics manager.
      */
-    const GraphicsManager *get_graphics_manager() const;
+    inline GraphicsManager *get_graphics_manager() { return &this->_graphics_manager; };
 
     template <typename T = MainBehaviourManager>
     void create_main_behaviour_manager() {

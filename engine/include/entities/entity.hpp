@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "../types.hpp"
-#include "../utils/engine_core_dependency_injector.h"
+#include "../utils/engine_core_dependency_injector.hpp"
 #include "../utils/event.hpp"
 
 class Entity : public EngineCoreDependencyInjector {
@@ -25,35 +25,37 @@ class Entity : public EngineCoreDependencyInjector {
     Entity &operator=(const Entity &) = delete;  // Prevent assignment. The entity should not be copied.
 
     inline const bool is_active() const { return this->_ancestor_active && this->_active; }
+    inline const bool is_set_as_active() const { return this->_active; }
     void set_active(bool is_active);
 
     inline Entity *get_parent() const { return this->_parent; }
     void set_parent(Entity *parent);
 
     template <typename T = Entity, typename... Args>
-    void create_child(Args &&...args) {
-        this->_register_created_child(this->create_unique<T>(this, std::forward<Args>(args)...));
+    T *create_child(Args &&...args) {
+        return static_cast<T *>(this->_register_created_child(this->create_unique<T>(this, std::forward<Args>(args)...)));
     }
 
     bool has_child(Entity *entity) const;
     inline Entity *get_child(unsigned int index) const { return this->_children->at(index).get(); }
-    unsigned int get_child_index(Entity *entity) const;
-    inline unsigned int get_child_count() const { return this->_children->size(); }
+    const unsigned int get_child_index(Entity *entity) const;
+    inline const unsigned int get_child_count() const { return this->_children->size(); }
     void destroy_child(unsigned int index);
     void destroy_all_children();
 
     void destroy();
 
     template <typename T = Component, typename... Args>
-    void create_component(Args &&...args) {
-        this->_register_created_component(this->create_unique<T>(std::forward<Args>(args)...));
+    T *create_component(Args &&...args) {
+        return static_cast<T *>(this->_register_created_component(this->create_unique<T>(std::forward<Args>(args)...)));
     }
 
     bool has_component(const std::type_info &type_info) const;
     Component *get_component(unsigned int index) const;
     Component *get_component(const std::type_info &type_info) const;
-    unsigned int get_component_index(Component *component) const;
-    unsigned int get_component_index(const std::type_info &type_info) const;
+    const unsigned int get_component_index(Component *component) const;
+    const unsigned int get_component_index(const std::type_info &type_info) const;
+    inline const unsigned int get_component_count() const { return this->_components->size(); }
     void destroy_component(unsigned int index);
     void destroy_component(const std::type_info &type_info);
     void destroy_all_components();
@@ -81,8 +83,8 @@ class Entity : public EngineCoreDependencyInjector {
    private:
     inline const bool _is_ancestor_active() const { return this->_ancestor_active; }
     void _set_ancestor_active(bool parent_active);
-    void _register_created_child(std::unique_ptr<Entity> child);
-    void _register_created_component(std::unique_ptr<Component> component);
+    Entity *_register_created_child(std::unique_ptr<Entity> child);
+    Component *_register_created_component(std::unique_ptr<Component> component);
 
    private:
     bool _active;

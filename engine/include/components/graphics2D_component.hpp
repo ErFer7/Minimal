@@ -2,18 +2,16 @@
 
 #include <functional>
 
-#include "../engine_core.hpp"
-#include "../utils/transform_system2D.h"
-#include "managed_component.h"
+#include "../types.hpp"
+#include "../utils/transform_system2D.hpp"
+#include "managed_component.hpp"
 #include "raylib.h"
-#include "transform2D_component.h"
 
 enum class RenderingMode { SCREEN_SPACE, WORLD_SPACE_2D, WORLD_SPACE_3D };
 
 class Graphics2DComponent : public ManagedComponent {
    public:
-    Graphics2DComponent(EngineCore *engine_core,
-                        std::string name = "");
+    Graphics2DComponent(EngineCore *engine_core, Entity *entity);
     ~Graphics2DComponent() override;
 
     inline Texture2D *get_texture() { return this->_texture; }

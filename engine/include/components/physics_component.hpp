@@ -1,11 +1,12 @@
 #pragma once
 
 #include "../managers/physics_manager.h"
-#include "managed_component.h"
+#include "../types.hpp"
+#include "managed_component.hpp"
 
 class PhysicsComponent : public ManagedComponent {
    public:
-    PhysicsComponent(EngineCore *engine_core, std::string name = "") : ManagedComponent(engine_core, true, name) {}
+    PhysicsComponent(EngineCore *engine_core, Entity *entity) : ManagedComponent(engine_core, entity, true) {}
     ~PhysicsComponent() override;
 
    protected:

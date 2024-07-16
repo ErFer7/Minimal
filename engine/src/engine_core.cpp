@@ -15,18 +15,6 @@ EngineCore::EngineCore(int screen_width,
     this->_graphics_manager = GraphicsManager(this, screen_width, screen_height, title, target_fps, resizable, fullscreen, show_fps);
 }
 
-// TODO: See if this can be inlined
-
-const EntityContainer *EngineCore::get_entity_container() const { return &this->_entity_container; }
-
-const MainBehaviourManager *EngineCore::get_main_behaviour_manager() const { return &this->_main_behaviour_manager; }
-
-const BehaviourManager *EngineCore::get_behaviour_manager() const { return &this->_behaviour_manager; }
-
-const PhysicsManager *EngineCore::get_physics_manager() const { return &this->_physics_manager; }
-
-const GraphicsManager *EngineCore::get_graphics_manager() const { return &this->_graphics_manager; }
-
 void EngineCore::init_main_loop() {
     this->_behaviour_manager.init();
     this->_physics_manager.init();

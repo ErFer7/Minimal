@@ -3,7 +3,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "../utils/dynamic_array.hpp"
 #include "raylib.h"
 
 enum class ImageLoadingMode { DEFAULT, RAW, SVG, ANIM };
@@ -83,14 +82,14 @@ class ResourceContainer {
     void unload_all_models();
 
    private:
-    std::unordered_map<std::string, Shader> *_shaders;                   // VRAM
-    std::unordered_map<std::string, unsigned char *> *_data;             // RAM
-    std::unordered_map<std::string, char *> *_texts;                     // RAM
-    std::unordered_map<std::string, Image> *_images;                     // RAM
-    std::unordered_map<std::string, Texture2D> *_textures;               // VRAM
-    std::unordered_map<std::string, Font> *_fonts;                       // VRAM
-    std::unordered_map<std::string, Model> *_models;                     // RAM
-    std::unordered_map<std::string, Material> *_materials;               // RAM
+    std::unordered_map<std::string, Shader> *_shaders;        // VRAM
+    std::unordered_map<std::string, unsigned char *> *_data;  // RAM
+    std::unordered_map<std::string, char *> *_texts;          // RAM
+    std::unordered_map<std::string, Image> *_images;          // RAM
+    std::unordered_map<std::string, Texture2D> *_textures;    // VRAM
+    std::unordered_map<std::string, Font> *_fonts;            // VRAM
+    std::unordered_map<std::string, Model> *_models;          // RAM
+    std::unordered_map<std::string, Material> *_materials;    // RAM
 
     // TODO: Implement these
     std::unordered_map<std::string, ModelAnimation> *_model_animations;  // RAM

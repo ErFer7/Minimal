@@ -132,7 +132,7 @@ SortingMode GraphicsManager::get_layer_sorting_mode(int layer, RenderingMode ren
 }
 
 void GraphicsManager::register_component(Component *component) {
-    Graphics2DComponent *graphics2D_component = dynamic_cast<Graphics2DComponent *>(component);
+    Graphics2DComponent *graphics2D_component = static_cast<Graphics2DComponent *>(component);
 
     RenderingMode rendering_mode = graphics2D_component->get_rendering_mode();
     int component_layer = graphics2D_component->get_layer();
@@ -187,7 +187,7 @@ void GraphicsManager::register_component(Component *component) {
 }
 
 void GraphicsManager::unregister_component(Component *component) {
-    Graphics2DComponent *graphics2D_component = dynamic_cast<Graphics2DComponent *>(component);
+    Graphics2DComponent *graphics2D_component = static_cast<Graphics2DComponent *>(component);
 
     RenderingMode rendering_mode = graphics2D_component->get_rendering_mode();
     int component_layer = graphics2D_component->get_layer();

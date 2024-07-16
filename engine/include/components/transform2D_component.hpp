@@ -2,15 +2,13 @@
 
 #include <functional>
 
-#include "../entities/entity.h"
-#include "../utils/dynamic_array.h"
-#include "../utils/transform_system2D.h"
-#include "component.h"
-#include "raymath.h"
+#include "../types.hpp"
+#include "../utils/transform_system2D.hpp"
+#include "component.hpp"
 
 class Transform2DComponent : public Component {
    public:
-    Transform2DComponent(EngineCore *engine_core, std::string name = "");
+    Transform2DComponent(EngineCore *engine_core, Entity *entity);
     ~Transform2DComponent() override;
 
     inline Vector2 get_local_position() const { return this->_transform_system->get_offset_position(); }
@@ -21,12 +19,8 @@ class Transform2DComponent : public Component {
     inline Vector2 get_world_scale() { return this->_transform_system->get_result_scale(); }
     inline Transform2D get_local_transform() { return this->_transform_system->get_offset(); }
     inline Transform2D get_world_transform() { return this->_transform_system->get_result(); }
-    inline void add_update_callback(std::function<void(Transform2DComponent *)> *callback) {
-        this->_update_callbacks->add(callback);
-    }
-    inline void remove_update_callback(std::function<void(Transform2DComponent *)> *callback) {
-        this->_update_callbacks->remove(callback);
-    }
+    inline void add_update_callback(std::function<void(Transform2DComponent *)> *callback) { this->_update_callbacks->add(callback); }
+    inline void remove_update_callback(std::function<void(Transform2DComponent *)> *callback) { this->_update_callbacks->remove(callback); }
     void on_entity_parent_added(Entity *parent) override;
     void on_entity_parent_removed(Entity *parent) override;
     void on_add_to_entity() override;

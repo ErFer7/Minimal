@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../managers/behaviour_manager.h"
-#include "managed_component.h"
+#include "../types.hpp"
+#include "managed_component.hpp"
 
 class BehaviourComponent : public ManagedComponent {
    public:
-    BehaviourComponent(EngineCore *engine_core, bool unique, std::string name = "") : ManagedComponent(engine_core, unique, name) {}
+    BehaviourComponent(EngineCore *engine_core, Entity *entity, bool unique) : ManagedComponent(engine_core, entity, unique) {}
     ~BehaviourComponent() override;
 
     virtual void update() = 0;

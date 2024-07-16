@@ -1,10 +1,11 @@
 #pragma once
 
-#include "component.h"
+#include "../types.hpp"
+#include "component.hpp"
 
 class ManagedComponent : public Component {
    public:
-    ManagedComponent(EngineCore *engine_core, bool unique, std::string name = "") : Component(engine_core, unique, name) {}
+    ManagedComponent(EngineCore *engine_core, Entity *entity, bool unique) : Component(engine_core, entity, unique) {}
     ~ManagedComponent() override = default;
 
    protected:

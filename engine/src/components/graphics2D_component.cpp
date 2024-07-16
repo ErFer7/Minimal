@@ -1,7 +1,6 @@
-#include "../../include/components/graphics2D_component.h"
+#include "../../include/components/graphics2D_component.hpp"
 
-Graphics2DComponent::Graphics2DComponent(EngineCore *engine_core, std::string name)
-    : ManagedComponent(engine_core, false, name) {
+Graphics2DComponent::Graphics2DComponent(EngineCore *engine_core, Entity *entity) : ManagedComponent(engine_core, entity, false) {
     this->_texture = new Texture2D();
     this->_transform_system = new TransformSystem2D();
     this->_source_rectangle = {0, 0, 0, 0};
@@ -82,9 +81,7 @@ void Graphics2DComponent::draw() {
                    this->_tint);
 }
 
-void Graphics2DComponent::register_component() {
-    this->get_engine_core()->get_graphics_manager()->register_component(this);
-}
+void Graphics2DComponent::register_component() { this->get_engine_core()->get_graphics_manager()->register_component(this); }
 
 void Graphics2DComponent::unregister_component() {
     GraphicsManager *graphics_manager = this->get_engine_core()->get_graphics_manager();

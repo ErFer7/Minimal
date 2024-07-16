@@ -1,4 +1,4 @@
-#include "../../include/containers/resource_container.h"
+#include "../../include/containers/resource_container.hpp"
 
 ResourceContainer::ResourceContainer() {
     this->_shaders = new std::unordered_map<std::string, Shader>();
