@@ -2,7 +2,7 @@
 
 #include "../components/graphics2D_component.h"
 #include "../components/transform2D_component.h"
-#include "entity.h"
+#include "entity.hpp"
 
 class Entity2D : public Entity {
    public:

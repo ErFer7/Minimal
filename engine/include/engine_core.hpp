@@ -1,17 +1,11 @@
 #pragma once
 
-#include "./containers/entity_container.h"
+#include "./containers/entity_container.hpp"
 #include "./managers/behaviour_manager.h"
 #include "./managers/graphics_manager.h"
 #include "./managers/main_behaviour_manager.h"
 #include "./managers/physics_manager.h"
-
-// Forward declarations to lower dependencies in the hierarchy
-class EntityContainer;
-class MainBehaviourManager;
-class BehaviourManager;
-class PhysicsManager;
-class GraphicsManager;
+#include "types.hpp"
 
 /**
  * The core engine class responsible for managing various subsystems.
