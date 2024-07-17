@@ -1,6 +1,6 @@
 #pragma once
 
-#include "manager.h"
+#include "manager.hpp"
 
 class MainBehaviourManager : public Manager {
    public:

@@ -9,6 +9,10 @@
 #include "../utils/engine_core_dependency_injector.hpp"
 #include "../utils/event.hpp"
 
+// TODO: Implement an activity state
+// TODO: Implement name with a hash map
+// TODO: Implement has_child for instance, type and name
+
 class Entity : public EngineCoreDependencyInjector {
     friend class EntityContainer;
 
@@ -24,19 +28,13 @@ class Entity : public EngineCoreDependencyInjector {
 
     Entity &operator=(const Entity &) = delete;  // Prevent assignment. The entity should not be copied.
 
-    inline const bool is_active() const { return this->_ancestor_active && this->_active; }
-    inline const bool is_set_as_active() const { return this->_active; }
-    void set_active(bool is_active);
-
     inline Entity *get_parent() const { return this->_parent; }
-    void set_parent(Entity *parent);
 
     template <typename T = Entity, typename... Args>
     T *create_child(Args &&...args) {
         return static_cast<T *>(this->_register_created_child(this->create_unique<T>(this, std::forward<Args>(args)...)));
     }
 
-    bool has_child(Entity *entity) const;
     inline Entity *get_child(unsigned int index) const { return this->_children->at(index).get(); }
     const unsigned int get_child_index(Entity *entity) const;
     inline const unsigned int get_child_count() const { return this->_children->size(); }
@@ -81,23 +79,16 @@ class Entity : public EngineCoreDependencyInjector {
     }
 
    private:
-    inline const bool _is_ancestor_active() const { return this->_ancestor_active; }
-    void _set_ancestor_active(bool parent_active);
     Entity *_register_created_child(std::unique_ptr<Entity> child);
     Component *_register_created_component(std::unique_ptr<Component> component);
 
    private:
-    bool _active;
-    bool _ancestor_active;
     Entity *_parent;
     std::unique_ptr<ChildrenVector> _children;
     std::unique_ptr<ComponentsVector> _components;
     Event<Entity *> _on_destroy;
-    Event<Entity *, Entity *> _on_parent_change;
     Event<Entity *> _on_child_create;
     Event<Entity *> _on_child_destroy;
-    Event<Entity *> _on_child_add;
-    Event<Entity *> _on_child_remove;
     Event<Entity *, Component *> _on_component_create;
     Event<Entity *, Component *> _on_component_destroy;
 };

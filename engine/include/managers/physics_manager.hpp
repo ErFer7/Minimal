@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../components/physics_component.h"
-#include "../engine_core.hpp"
-#include "unordered_component_manager.h"
+#include "../types.hpp"
+#include "unordered_component_manager.hpp"
 
 class PhysicsComponent;
 

@@ -2,7 +2,7 @@
 
 #include "../../engine/include/minimal.hpp"
 
-class CustomMainBehaviourManager : public MainBehaviourManager {
+class CustomMainBehaviourManager final : public MainBehaviourManager {
    public:
     CustomMainBehaviourManager(EngineCore *engine_core) : MainBehaviourManager(engine_core){};
     ~CustomMainBehaviourManager() final = default;

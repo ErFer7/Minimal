@@ -1,11 +1,7 @@
 #pragma once
 
-#include <cstddef>
-#include <typeinfo>
-
-#include "../utils/engine_core_dependency_injector.h"
-
-class EngineCore;
+#include "../types.hpp"
+#include "../utils/engine_core_dependency_injector.hpp"
 
 class Manager : public EngineCoreDependencyInjector {
    public:

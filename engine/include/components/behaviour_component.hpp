@@ -8,6 +8,7 @@ class BehaviourComponent : public ManagedComponent {
     BehaviourComponent(EngineCore *engine_core, Entity *entity, bool unique) : ManagedComponent(engine_core, entity, unique) {}
     ~BehaviourComponent() override;
 
+    virtual void start() = 0;
     virtual void update() = 0;
 
    protected:

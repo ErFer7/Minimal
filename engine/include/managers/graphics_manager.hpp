@@ -2,8 +2,8 @@
 
 #include <unordered_map>
 
-#include "../components/graphics2D_component.h"
-#include "component_manager.h"
+#include "../types.hpp"
+#include "component_manager.hpp"
 #include "raylib.h"
 
 class Graphics2DComponent;

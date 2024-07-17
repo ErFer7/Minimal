@@ -1,10 +1,10 @@
 #pragma once
 
 #include "./containers/entity_container.hpp"
-#include "./managers/behaviour_manager.h"
-#include "./managers/graphics_manager.h"
-#include "./managers/main_behaviour_manager.h"
-#include "./managers/physics_manager.h"
+#include "./managers/behaviour_manager.hpp"
+#include "./managers/graphics_manager.hpp"
+#include "./managers/main_behaviour_manager.hpp"
+#include "./managers/physics_manager.hpp"
 #include "types.hpp"
 
 /**

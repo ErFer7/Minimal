@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../managers/physics_manager.h"
+#include "../managers/physics_manager.hpp"
 #include "../types.hpp"
 #include "managed_component.hpp"
 

@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#include "../../include/managers/behaviour_manager.h"
+#include "../../include/managers/behaviour_manager.hpp"
 
 BehaviourComponent::~BehaviourComponent() {
     BehaviourManager *behaviour_manager = this->get_engine_core()->get_behaviour_manager();

@@ -1,9 +1,7 @@
 #pragma once
 
-#include "../utils/dynamic_array.h"
-#include "manager.h"
-
-class Component;
+#include "../types.hpp"
+#include "manager.hpp"
 
 class ComponentManager : public Manager {
    public:
