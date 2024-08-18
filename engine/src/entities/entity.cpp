@@ -15,6 +15,10 @@ Entity::Entity(EngineCore *engine_core, Entity *parent) : EngineCoreDependencyIn
     this->_components = std::make_unique<ComponentsVector>();
 }
 
+Entity::Entity(const Entity &other) { this->_copy(other); }
+
+Entity::Entity(Entity &&other) noexcept { this->_move(std::move(other)); }
+
 Entity::~Entity() {
     this->destroy_all_children();
     this->destroy_all_components();
@@ -31,7 +35,8 @@ const unsigned int Entity::get_child_index(Entity *entity) const {
 }
 
 void Entity::destroy_child(unsigned int index) {
-    Entity *child = this->_children->at(index).get();
+    Entity *child = &this->_children->at(index);
+
     child->_on_destroy(child);
     this->_on_child_destroy(child);
     child->destroy_all_children();
@@ -39,9 +44,10 @@ void Entity::destroy_child(unsigned int index) {
 }
 
 void Entity::destroy_all_children() {
-    for (auto &child : *this->_children) {
-        child->_on_destroy(child.get());
-        this->_on_child_destroy(child.get());
+    for (auto it = this->_children->begin(); it != this->_children->end(); ++it) {
+        Entity *child = &*it;  // it is converted to Entity and then & gets the address of the Entity :p
+        child->_on_destroy(child);
+        this->_on_child_destroy(child);
         child->destroy_all_children();
     }
 
@@ -132,11 +138,11 @@ void Entity::destroy_all_components() {
     this->_components->clear();
 }
 
-Entity *Entity::_register_created_child(std::unique_ptr<Entity> child) {
+Entity *Entity::_register_created_child(Entity child) {
     this->_children->push_back(child);
-    this->_on_child_create(child.get());
+    this->_on_child_create(&child);
 
-    return this->_children->back().get();
+    return &this->_children->back();
 }
 
 Component *Entity::_register_created_component(std::unique_ptr<Component> component) {
@@ -153,4 +159,36 @@ Component *Entity::_register_created_component(std::unique_ptr<Component> compon
     }
 
     return nullptr;
+}
+
+void Entity::_move(Entity &&other) {
+    if (this != &other) {
+        this->_children.reset();
+        this->_components.reset();
+
+        this->_parent = other._parent;
+        this->_children = std::move(other._children);
+        this->_components = std::move(other._components);
+        this->_on_destroy = other._on_destroy;
+        this->_on_child_create = other._on_child_create;
+        this->_on_child_destroy = other._on_child_destroy;
+        this->_on_component_create = other._on_component_create;
+        this->_on_component_destroy = other._on_component_destroy;
+    }
+}
+
+void Entity::_copy(const Entity &other) {
+    if (this != &other) {
+        this->_children.reset();
+        this->_components.reset();
+
+        this->_parent = other._parent;
+        this->_children = std::make_unique<ChildrenVector>(*other._children);
+        this->_components = std::make_unique<ComponentsVector>(*other._components);
+        this->_on_destroy = other._on_destroy;
+        this->_on_child_create = other._on_child_create;
+        this->_on_child_destroy = other._on_child_destroy;
+        this->_on_component_create = other._on_component_create;
+        this->_on_component_destroy = other._on_component_destroy;
+    }
 }

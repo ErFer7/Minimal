@@ -17,25 +17,35 @@ class Entity : public EngineCoreDependencyInjector {
     friend class EntityContainer;
 
    public:
-    typedef std::vector<std::unique_ptr<Entity>> ChildrenVector;
-    typedef std::vector<std::unique_ptr<Component>> ComponentsVector;
+    typedef std::vector<Entity> ChildrenVector;
+    typedef std::vector<Component *> ComponentsVector;
 
    public:
     Entity() = default;
-    Entity(const Entity &) = delete;
     Entity(EngineCore *engine_core, Entity *parent);
+    Entity(const Entity &other);
+    Entity(Entity &&other) noexcept;
     ~Entity();
 
-    Entity &operator=(const Entity &) = delete;  // Prevent assignment. The entity should not be copied.
+    Entity &operator=(const Entity &other) noexcept {
+        this->_copy(other);
+
+        return *this;
+    }
 
     inline Entity *get_parent() const { return this->_parent; }
 
     template <typename T = Entity, typename... Args>
     T *create_child(Args &&...args) {
-        return static_cast<T *>(this->_register_created_child(this->create_unique<T>(this, std::forward<Args>(args)...)));
+        this->_children->push_back(this->create_in_stack<T>(this, std::forward<Args>(args)...));
+
+        T *child = &this->_children->back();
+        this->_on_child_create(child);
+
+        return child;
     }
 
-    inline Entity *get_child(unsigned int index) const { return this->_children->at(index).get(); }
+    inline Entity *get_child(unsigned int index) const { return &this->_children->at(index); }
     const unsigned int get_child_index(Entity *entity) const;
     inline const unsigned int get_child_count() const { return this->_children->size(); }
     void destroy_child(unsigned int index);
@@ -79,8 +89,9 @@ class Entity : public EngineCoreDependencyInjector {
     }
 
    private:
-    Entity *_register_created_child(std::unique_ptr<Entity> child);
     Component *_register_created_component(std::unique_ptr<Component> component);
+    void _move(Entity &&other);
+    void _copy(const Entity &other);
 
    private:
     Entity *_parent;
