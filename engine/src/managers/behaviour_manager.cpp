@@ -1,14 +1,18 @@
-#include "../../include/managers/behaviour_manager.h"
+#include "../../include/managers/behaviour_manager.hpp"
+
+#include <vector>
+
+#include "../../include/components/behaviour_component.hpp"
 
 void BehaviourManager::init() {}
 
 void BehaviourManager::update() {
-    DynamicArray<Component *> *components = this->get_components();
+    std::vector<Component *> *components = this->get_components();
 
-    for (unsigned int i = 0; i < components->get_size(); i++) {
-        BehaviourComponent *behaviour_component = static_cast<BehaviourComponent *>(components->nullable_at(i));
+    for (unsigned int i = 0; i < components->size(); i++) {
+        BehaviourComponent *behaviour_component = static_cast<BehaviourComponent *>(components->at(i));
 
-        if (behaviour_component != nullptr && behaviour_component->is_active()) {
+        if (behaviour_component->is_active()) {
             behaviour_component->update();
         }
     }

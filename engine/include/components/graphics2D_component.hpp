@@ -2,18 +2,16 @@
 
 #include <functional>
 
-#include "../engine_core.h"
-#include "../utils/transform_system2D.h"
-#include "managed_component.h"
+#include "../types.hpp"
+#include "../utils/transform_system2D.hpp"
+#include "component.hpp"
 #include "raylib.h"
-#include "transform2D_component.h"
 
 enum class RenderingMode { SCREEN_SPACE, WORLD_SPACE_2D, WORLD_SPACE_3D };
 
-class Graphics2DComponent : public ManagedComponent {
+class Graphics2DComponent : public Component {
    public:
-    Graphics2DComponent(EngineCore *engine_core,
-                        std::string name = "");
+    Graphics2DComponent(EngineCore *engine_core, Entity *entity);
     ~Graphics2DComponent() override;
 
     inline Texture2D *get_texture() { return this->_texture; }
@@ -25,14 +23,12 @@ class Graphics2DComponent : public ManagedComponent {
     inline int get_layer() { return this->_layer; }
     inline void set_layer(int layer) { this->_layer = layer; }
     void set_texture(Texture2D texture);
-    void on_add_to_entity() override;
-    void on_remove_from_entity() override;
-    void on_entity_parent_added(Entity *parent) override;
-    void on_entity_parent_removed(Entity *parent) override;
+    void on_entity_parent_added(Entity *parent);
+    void on_entity_parent_removed(Entity *parent);
     void draw();
 
    protected:
-    void register_component() override;
+    Component *register_component() override;
     void unregister_component() override;
 
    private:

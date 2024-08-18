@@ -1,10 +1,6 @@
-#include "../../include/entities/entity2D.h"
+#include "../../include/entities/entity2D.hpp"
 
-Entity2D::Entity2D(EngineCore *engine_core, std::string name, bool auto_managed)
-    : Entity(engine_core, name, auto_managed) {
-    this->_transform_component = this->create<Transform2DComponent>();
-    this->_graphics_component = this->create<Graphics2DComponent>();
-
-    this->add_component(this->_transform_component);
-    this->add_component(this->_graphics_component);
+Entity2D::Entity2D(EngineCore *engine_core, Entity *parent) : Entity(engine_core, parent) {
+    this->_transform_component = this->create_component<Transform2DComponent>();
+    this->_graphics_component = this->create_component<Graphics2DComponent>();
 }

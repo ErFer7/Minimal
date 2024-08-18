@@ -1,32 +1,32 @@
 #pragma once
 
+#include <memory>
 #include <unordered_map>
+#include <vector>
 
-#include "../components/graphics2D_component.h"
-#include "component_manager.h"
+#include "../types.hpp"
+#include "component_manager.hpp"
 #include "raylib.h"
-
-class Graphics2DComponent;
-enum class RenderingMode;
 
 enum class SortingMode { NONE, TOP_TO_DOWN, ISOMETRIC };
 
 struct Layer {
     int layer;
     bool dirty;
-    SortingMode sorting_type;
-    DynamicArray<Graphics2DComponent *> *components;
+    SortingMode sorting_mode;
+    std::unique_ptr<std::vector<Graphics2DComponent *>> components;
 };
 
 bool is_layer_null(Layer layer);
 
 struct Space {
     bool dirty;
-    DynamicArray<Layer> *_layers;
+    std::unique_ptr<std::vector<Layer>> _layers;
 };
 
 class GraphicsManager : public ComponentManager {
    public:
+    GraphicsManager() = default;
     GraphicsManager(EngineCore *engine_core,
                     int screen_width,
                     int screen_height,

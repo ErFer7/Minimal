@@ -1,6 +1,6 @@
 # Minimal
 
-# IN DEVELOPMENT
+# IN DEVELOPMENT, CURRENTLY BEING REFACTORED FROM SCRATCH
 
 This is a very simple game engine for personal projects
 
