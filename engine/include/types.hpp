@@ -5,7 +5,6 @@ class EngineCore;
 
 // Components
 class Component;
-class ManagedComponent;
 class Transform2DComponent;
 class PhysicsComponent;
 class BehaviourComponent;
@@ -21,7 +20,6 @@ class Entity2D;
 
 // Managers
 class Manager;
-class UnorderedComponentManager;
 class ComponentManager;
 class BehaviourManager;
 class PhysicsManager;

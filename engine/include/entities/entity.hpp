@@ -37,7 +37,7 @@ class Entity : public EngineCoreDependencyInjector {
 
     template <typename T = Entity, typename... Args>
     T *create_child(Args &&...args) {
-        this->_children->push_back(this->create_in_stack<T>(this, std::forward<Args>(args)...));
+        this->_children->push_back(this->create<T>(this, std::forward<Args>(args)...));
 
         T *child = &this->_children->back();
         this->_on_child_create(child);
@@ -55,7 +55,7 @@ class Entity : public EngineCoreDependencyInjector {
 
     template <typename T = Component, typename... Args>
     T *create_component(Args &&...args) {
-        return static_cast<T *>(this->_register_created_component(this->create_unique<T>(std::forward<Args>(args)...)));
+        return static_cast<T *>(this->_register_created_component(this->create<T>(std::forward<Args>(args)...)));
     }
 
     bool has_component(const std::type_info &type_info) const;
@@ -89,7 +89,7 @@ class Entity : public EngineCoreDependencyInjector {
     }
 
    private:
-    Component *_register_created_component(std::unique_ptr<Component> component);
+    Component *_register_created_component(Component component);
     void _move(Entity &&other);
     void _copy(const Entity &other);
 

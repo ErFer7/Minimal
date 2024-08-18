@@ -26,6 +26,11 @@ class EngineCoreDependencyInjector {
      */
     inline EngineCore *get_engine_core() const { return this->_engine_core_ref; }
 
+    template <typename T, typename... Args>
+    T create(Args &&...args) {
+        return T(this->_engine_core_ref, std::forward<Args>(args)...);
+    }
+
     /**
      * Creates an instance of type T with the given arguments.
      *
@@ -34,13 +39,8 @@ class EngineCoreDependencyInjector {
      * args? The arguments to pass to the constructor of T.
      */
     template <typename T, typename... Args>
-    T *create(Args &&...args) {
+    T *create_heap_allocated(Args &&...args) {
         return new T(this->_engine_core_ref, std::forward<Args>(args)...);
-    }
-
-    template <typename T, typename... Args>
-    T create_in_stack(Args &&...args) {
-        return T(this->_engine_core_ref, std::forward<Args>(args)...);
     }
 
     template <typename T, typename... Args>

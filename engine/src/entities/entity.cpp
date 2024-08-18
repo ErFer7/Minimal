@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "../../include/components/component.hpp"
-#include "../../include/components/managed_component.hpp"
 
 Entity::Entity(EngineCore *engine_core, Entity *parent) : EngineCoreDependencyInjector(engine_core) {
     this->_parent = parent;
@@ -70,12 +69,12 @@ bool Entity::has_component(const std::type_info &type_info) const {
     return false;
 }
 
-Component *Entity::get_component(unsigned int index) const { return this->_components->at(index).get(); }
+Component *Entity::get_component(unsigned int index) const { return this->_components->at(index); }
 
 Component *Entity::get_component(const std::type_info &type_info) const {
     for (auto &component : *this->_components) {
         if (typeid(*component) == type_info) {
-            return component.get();
+            return component;
         }
     }
 
@@ -107,15 +106,10 @@ const unsigned int Entity::get_component_index(const std::type_info &type_info) 
 }
 
 void Entity::destroy_component(unsigned int index) {
-    Component *component = this->_components->at(index).get();
+    Component *component = this->_components->at(index);
     component->on_destroy();
     this->_on_component_destroy(this, component);
-
-    if (static_cast<ManagedComponent *>(component) != nullptr) {
-        ManagedComponent *managed_component = static_cast<ManagedComponent *>(component);
-        managed_component->unregister_component();
-    }
-
+    component->unregister_component();
     this->_components->erase(this->_components->begin() + index);
 }
 
@@ -127,35 +121,21 @@ void Entity::destroy_component(const std::type_info &type_info) {
 void Entity::destroy_all_components() {
     for (auto &component : *this->_components) {
         component->on_destroy();
-        this->_on_component_destroy(this, component.get());
-
-        if (static_cast<ManagedComponent *>(component.get()) != nullptr) {
-            ManagedComponent *managed_component = static_cast<ManagedComponent *>(component.get());
-            managed_component->unregister_component();
-        }
+        this->_on_component_destroy(this, component);
+        component->unregister_component();
     }
 
     this->_components->clear();
 }
 
-Entity *Entity::_register_created_child(Entity child) {
-    this->_children->push_back(child);
-    this->_on_child_create(&child);
+Component *Entity::_register_created_component(Component component) {
+    if (!component.is_unique() || !this->has_component(typeid(component))) {
+        Component *registered_component = component.register_component();
 
-    return &this->_children->back();
-}
+        this->_components->push_back(registered_component);
+        this->_on_component_create(this, registered_component);
 
-Component *Entity::_register_created_component(std::unique_ptr<Component> component) {
-    if (!component->is_unique() || !this->has_component(typeid(*component))) {
-        if (static_cast<ManagedComponent *>(component.get()) != nullptr) {
-            ManagedComponent *managed_component = static_cast<ManagedComponent *>(component.get());
-            managed_component->register_component();
-        }
-
-        this->_components->push_back(std::move(component));
-        this->_on_component_create(this, component.get());
-
-        return this->_components->back().get();
+        return registered_component;
     }
 
     return nullptr;

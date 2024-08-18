@@ -2,11 +2,11 @@
 
 #include "../managers/physics_manager.hpp"
 #include "../types.hpp"
-#include "managed_component.hpp"
+#include "component.hpp"
 
-class PhysicsComponent : public ManagedComponent {
+class PhysicsComponent : public Component {
    public:
-    PhysicsComponent(EngineCore *engine_core, Entity *entity) : ManagedComponent(engine_core, entity, true) {}
+    PhysicsComponent(EngineCore *engine_core, Entity *entity) : Component(engine_core, entity, true) {}
     ~PhysicsComponent() override;
 
    protected:

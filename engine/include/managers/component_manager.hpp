@@ -1,5 +1,9 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+
+#include "../components/component.hpp"
 #include "../types.hpp"
 #include "manager.hpp"
 
@@ -12,6 +16,13 @@ class ComponentManager : public Manager {
     void update() override {};
 
    protected:
-    virtual void register_component(Component *component) = 0;
-    virtual void unregister_component(Component *component) = 0;
+    inline Component *register_component(Component component) {
+        this->_components->push_back(component);
+        return &this->_components->back();
+    }
+
+    void unregister_component(Component *component);
+
+   private:
+    std::unique_ptr<std::vector<Component>> _components;
 };

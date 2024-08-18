@@ -3,7 +3,7 @@
 #include "../../include/entities/entity.hpp"
 
 EntityContainer::EntityContainer(EngineCore *engine_core) : EngineCoreDependencyInjector(engine_core) {
-    this->_root = this->create_in_stack<Entity>(nullptr);
+    this->_root = this->create<Entity>(nullptr);
 }
 
 EntityContainer::~EntityContainer() { this->destroy_all_entities(); }

@@ -19,6 +19,10 @@ class Component : public EngineCoreDependencyInjector {
     inline Entity *get_entity() const { return this->_entity; }
 
    protected:
+    virtual Component *register_component() { return nullptr; };
+    virtual void unregister_component() {};
+
+   protected:
     Event<> on_destroy;
 
    private:

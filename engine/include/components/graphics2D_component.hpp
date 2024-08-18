@@ -4,12 +4,12 @@
 
 #include "../types.hpp"
 #include "../utils/transform_system2D.hpp"
-#include "managed_component.hpp"
+#include "component.hpp"
 #include "raylib.h"
 
 enum class RenderingMode { SCREEN_SPACE, WORLD_SPACE_2D, WORLD_SPACE_3D };
 
-class Graphics2DComponent : public ManagedComponent {
+class Graphics2DComponent : public Component {
    public:
     Graphics2DComponent(EngineCore *engine_core, Entity *entity);
     ~Graphics2DComponent() override;
