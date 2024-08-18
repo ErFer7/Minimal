@@ -12,6 +12,8 @@
 // TODO: Implement an activity state
 // TODO: Implement name with a hash map
 // TODO: Implement has_child for instance, type and name
+// TODO: Optimize component creation
+// TODO: Event listeners
 
 class Entity : public EngineCoreDependencyInjector {
     friend class EntityContainer;
@@ -40,7 +42,7 @@ class Entity : public EngineCoreDependencyInjector {
         this->_children->push_back(this->create<T>(this, std::forward<Args>(args)...));
 
         T *child = &this->_children->back();
-        this->_on_child_create(child);
+        this->_on_child_create_event(child);
 
         return child;
     }
@@ -97,9 +99,9 @@ class Entity : public EngineCoreDependencyInjector {
     Entity *_parent;
     std::unique_ptr<ChildrenVector> _children;
     std::unique_ptr<ComponentsVector> _components;
-    Event<Entity *> _on_destroy;
-    Event<Entity *> _on_child_create;
-    Event<Entity *> _on_child_destroy;
-    Event<Entity *, Component *> _on_component_create;
-    Event<Entity *, Component *> _on_component_destroy;
+    Event<Entity *> _on_destroy_event;
+    Event<Entity *> _on_child_create_event;
+    Event<Entity *> _on_child_destroy_event;
+    Event<Entity *, Component *> _on_component_create_event;
+    Event<Entity *, Component *> _on_component_destroy_event;
 };

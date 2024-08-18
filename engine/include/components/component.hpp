@@ -23,7 +23,7 @@ class Component : public EngineCoreDependencyInjector {
     virtual void unregister_component() {};
 
    protected:
-    Event<> on_destroy;
+    Event<> on_destroy_event;
 
    private:
     bool _unique;

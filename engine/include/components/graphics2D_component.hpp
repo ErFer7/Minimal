@@ -23,14 +23,12 @@ class Graphics2DComponent : public Component {
     inline int get_layer() { return this->_layer; }
     inline void set_layer(int layer) { this->_layer = layer; }
     void set_texture(Texture2D texture);
-    void on_add_to_entity() override;
-    void on_remove_from_entity() override;
-    void on_entity_parent_added(Entity *parent) override;
-    void on_entity_parent_removed(Entity *parent) override;
+    void on_entity_parent_added(Entity *parent);
+    void on_entity_parent_removed(Entity *parent);
     void draw();
 
    protected:
-    void register_component() override;
+    Component *register_component() override;
     void unregister_component() override;
 
    private:

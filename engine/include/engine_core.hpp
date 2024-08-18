@@ -4,7 +4,6 @@
 #include "./managers/behaviour_manager.hpp"
 #include "./managers/graphics_manager.hpp"
 #include "./managers/main_behaviour_manager.hpp"
-#include "./managers/physics_manager.hpp"
 #include "types.hpp"
 
 /**
@@ -51,11 +50,6 @@ class EngineCore {
     inline BehaviourManager *get_behaviour_manager() { return &this->_behaviour_manager; };
 
     /**
-     * Get the physics manager.
-     */
-    inline PhysicsManager *get_physics_manager() { return &this->_physics_manager; };
-
-    /**
      * Get the graphics manager.
      */
     inline GraphicsManager *get_graphics_manager() { return &this->_graphics_manager; };
@@ -74,6 +68,5 @@ class EngineCore {
     EntityContainer _entity_container;
     MainBehaviourManager _main_behaviour_manager;
     BehaviourManager _behaviour_manager;
-    PhysicsManager _physics_manager;
     GraphicsManager _graphics_manager;
 };

@@ -31,6 +31,10 @@ class Transform2DComponent : public Component {
     void scale(Vector2 scale);
     void scale(float scale);
 
+   protected:
+    Component *register_component() override;
+    void unregister_component() override;
+
    private:
     void _on_parent_transform_updated_callback(Transform2DComponent *parent_transform);
 

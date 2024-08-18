@@ -6,7 +6,6 @@ class EngineCore;
 // Components
 class Component;
 class Transform2DComponent;
-class PhysicsComponent;
 class BehaviourComponent;
 class Graphics2DComponent;
 
@@ -22,8 +21,15 @@ class Entity2D;
 class Manager;
 class ComponentManager;
 class BehaviourManager;
-class PhysicsManager;
 class GraphicsManager;
 class MainBehaviourManager;
+
+// Enums
+enum class RenderingMode;
+enum class SortingMode;
+
+// structs
+struct Layer;
+struct Space;
 
 // Utilities are not included here
