@@ -77,7 +77,7 @@ void Graphics2DComponent::draw() {
                    this->_source_rectangle,
                    this->_destination_rectangle,
                    this->_origin,
-                   this->_transform_system->get_result_rotation(),
+                   this->_transform_system->get_absolute_rotation(),
                    this->_tint);
 }
 
@@ -98,13 +98,13 @@ void Graphics2DComponent::_on_transform_updated(Transform2DComponent *transform)
 }
 
 void Graphics2DComponent::_update_destination_rectangle() {
-    this->_destination_rectangle = {this->_transform_system->get_result_position().x,
-                                    this->_transform_system->get_result_position().y,
-                                    (float)this->_texture->width * this->_transform_system->get_result_scale().x,
-                                    (float)this->_texture->height * this->_transform_system->get_result_scale().y};
+    this->_destination_rectangle = {this->_transform_system->get_absolute_position().x,
+                                    this->_transform_system->get_absolute_position().y,
+                                    (float)this->_texture->width * this->_transform_system->get_absolute_scale().x,
+                                    (float)this->_texture->height * this->_transform_system->get_absolute_scale().y};
 }
 
 void Graphics2DComponent::_update_origin() {
     this->_origin = Vector2Multiply(Vector2{(float)this->_texture->width / 2.0f, (float)this->_texture->height / 2.0f},
-                                    this->_transform_system->get_result_scale());
+                                    this->_transform_system->get_absolute_scale());
 }

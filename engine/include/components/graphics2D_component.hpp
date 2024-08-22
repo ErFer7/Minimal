@@ -19,7 +19,7 @@ class Graphics2DComponent : public Component {
     inline void set_color(Color color) { this->_tint = color; }
     inline RenderingMode get_rendering_mode() { return this->_rendering_mode; }
     inline void set_rendering_mode(RenderingMode rendering_mode) { this->_rendering_mode = rendering_mode; }
-    inline Vector2 get_position() { return this->_transform_system->get_result_position(); }
+    inline Vector2 get_position() { return this->_transform_system->get_absolute_position(); }
     inline int get_layer() { return this->_layer; }
     inline void set_layer(int layer) { this->_layer = layer; }
     void set_texture(Texture2D texture);

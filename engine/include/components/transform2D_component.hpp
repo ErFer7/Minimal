@@ -13,27 +13,26 @@ class Transform2DComponent : public Component {
     Transform2DComponent(EngineCore *engine_core, Entity *entity);
     ~Transform2DComponent() override = default;
 
-    inline Vector2 get_relative_position() const { return this->_transform_system.get_offset_position(); }
-    inline float get_relative_rotation() const { return this->_transform_system.get_offset_rotation(); }
-    inline Vector2 get_relative_scale() const { return this->_transform_system.get_offset_scale(); }
-    inline Vector2 get_position() { return this->_transform_system.get_result_position(); }
-    inline float get_rotation() { return this->_transform_system.get_result_rotation(); }
-    inline Vector2 get_scale() { return this->_transform_system.get_result_scale(); }
-    inline Transform2D get_relative_transform() { return this->_transform_system.get_offset(); }
-    inline Transform2D get_transform() { return this->_transform_system.get_result(); }
+    inline Transform2D get_transform() { return this->_transform_system.get_absolute(); }
+    inline Vector2 get_position() { return this->_transform_system.get_absolute_position(); }
+    inline float get_rotation() { return this->_transform_system.get_absolute_rotation(); }
+    inline Vector2 get_scale() { return this->_transform_system.get_absolute_scale(); }
+    inline Transform2D get_relative_transform() const {
+        return this->_transform_system.get_relative(this->_parent_transform->get_transform());
+    }
+    inline Vector2 get_relative_position() const { return this->get_relative_transform().position; }
+    inline float get_relative_rotation() const { return this->get_relative_transform().rotation; }
+    inline Vector2 get_relative_scale() const { return this->get_relative_transform().scale; }
     inline TransformUpdateEvent *get_on_update_event() { return &this->_on_update_event; }
-    void set_relative_position(Vector2 position);
-    void set_relative_rotation(float rotation);
-    void set_relative_scale(Vector2 scale);
-    void set_relative_scale(float scale);
     void set_position(Vector2 position);
     void set_rotation(float rotation);
     void set_scale(Vector2 scale);
-    void set_scale(float scale);
+    void set_relative_position(Vector2 position);
+    void set_relative_rotation(float rotation);
+    void set_relative_scale(Vector2 scale);
     void translate(Vector2 translation);
     void rotate(float rotation);
     void scale(Vector2 scale);
-    void scale(float scale);
 
    protected:
     Component *register_component() override;
@@ -43,4 +42,5 @@ class Transform2DComponent : public Component {
     TransformSystem2D _transform_system;
     TransformUpdateEvent _on_update_event;
     TransformUpdateListener _on_parent_transform_update_listener;
+    Transform2DComponent *_parent_transform;
 };

@@ -107,7 +107,7 @@ const unsigned int Entity::get_component_index(const std::type_info &type_info) 
 
 void Entity::destroy_component(unsigned int index) {
     Component *component = this->_components->at(index);
-    component->get_on_destroy_event().invoke(component);
+    component->get_on_destroy_event()->invoke(component);
     this->_on_component_destroy_event.invoke(this, component);
     component->unregister_component();
     this->_components->erase(this->_components->begin() + index);
@@ -120,7 +120,7 @@ void Entity::destroy_component(const std::type_info &type_info) {
 
 void Entity::destroy_all_components() {
     for (auto &component : *this->_components) {
-        component->get_on_destroy_event().invoke(component);
+        component->get_on_destroy_event()->invoke(component);
         this->_on_component_destroy_event.invoke(this, component);
         component->unregister_component();
     }
