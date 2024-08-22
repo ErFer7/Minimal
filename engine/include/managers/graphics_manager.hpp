@@ -44,7 +44,7 @@ class GraphicsManager : public ComponentManager {
     SortingMode get_layer_sorting_mode(int layer, RenderingMode rendering_mode);
 
    protected:
-    void register_component(Component *component) override;
+    Component *register_component(Component *component) override;
     void unregister_component(Component *component) override;
 
    private:

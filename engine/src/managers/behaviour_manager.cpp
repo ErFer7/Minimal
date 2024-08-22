@@ -12,9 +12,7 @@ void BehaviourManager::update() {
     for (unsigned int i = 0; i < components->size(); i++) {
         BehaviourComponent *behaviour_component = static_cast<BehaviourComponent *>(components->at(i));
 
-        if (behaviour_component->is_active()) {
-            behaviour_component->update();
-        }
+        behaviour_component->update();
     }
 
     this->ComponentManager::update();

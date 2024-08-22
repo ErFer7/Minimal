@@ -13,10 +13,10 @@ class Transform2DComponent : public Component {
     Transform2DComponent(EngineCore *engine_core, Entity *entity);
     ~Transform2DComponent() override = default;
 
-    inline Transform2D get_transform() { return this->_transform_system.get_absolute(); }
-    inline Vector2 get_position() { return this->_transform_system.get_absolute_position(); }
-    inline float get_rotation() { return this->_transform_system.get_absolute_rotation(); }
-    inline Vector2 get_scale() { return this->_transform_system.get_absolute_scale(); }
+    inline Transform2D get_transform() const { return this->_transform_system.get_absolute(); }
+    inline Vector2 get_position() const { return this->_transform_system.get_absolute_position(); }
+    inline float get_rotation() const { return this->_transform_system.get_absolute_rotation(); }
+    inline Vector2 get_scale() const { return this->_transform_system.get_absolute_scale(); }
     inline Transform2D get_relative_transform() const {
         return this->_transform_system.get_relative(this->_parent_transform->get_transform());
     }
