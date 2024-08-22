@@ -36,6 +36,11 @@ class Entity : public EngineCoreDependencyInjector {
     }
 
     inline Entity *get_parent() const { return this->_parent; }
+    inline Event<Entity *> &get_on_destroy_event() { return this->_on_destroy_event; }
+    inline Event<Entity *> &get_on_child_create_event() { return this->_on_child_create_event; }
+    inline Event<Entity *> &get_on_child_destroy_event() { return this->_on_child_destroy_event; }
+    inline Event<Entity *, Component *> &get_on_component_create_event() { return this->_on_component_create_event; }
+    inline Event<Entity *, Component *> &get_on_component_destroy_event() { return this->_on_component_destroy_event; }
 
     template <typename T = Entity, typename... Args>
     T *create_child(Args &&...args) {
@@ -57,7 +62,7 @@ class Entity : public EngineCoreDependencyInjector {
 
     template <typename T = Component, typename... Args>
     T *create_component(Args &&...args) {
-        return static_cast<T *>(this->_register_created_component(this->create<T>(std::forward<Args>(args)...)));
+        return static_cast<T *>(this->_register_created_component(this->create<T>(this, std::forward<Args>(args)...)));
     }
 
     bool has_component(const std::type_info &type_info) const;

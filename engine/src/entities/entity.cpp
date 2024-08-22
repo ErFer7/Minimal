@@ -36,8 +36,8 @@ const unsigned int Entity::get_child_index(Entity *entity) const {
 void Entity::destroy_child(unsigned int index) {
     Entity *child = &this->_children->at(index);
 
-    child->_on_destroy_event(child);
-    this->_on_child_destroy_event(child);
+    child->get_on_destroy_event().invoke(child);
+    this->_on_child_destroy_event.invoke(child);
     child->destroy_all_children();
     this->_children->erase(this->_children->begin() + index);
 }
@@ -45,8 +45,8 @@ void Entity::destroy_child(unsigned int index) {
 void Entity::destroy_all_children() {
     for (auto it = this->_children->begin(); it != this->_children->end(); ++it) {
         Entity *child = &*it;  // it is converted to Entity and then & gets the address of the Entity :p
-        child->_on_destroy_event(child);
-        this->_on_child_destroy_event(child);
+        child->get_on_destroy_event().invoke(child);
+        this->_on_child_destroy_event.invoke(child);
         child->destroy_all_children();
     }
 
@@ -107,8 +107,8 @@ const unsigned int Entity::get_component_index(const std::type_info &type_info) 
 
 void Entity::destroy_component(unsigned int index) {
     Component *component = this->_components->at(index);
-    component->on_destroy_event();
-    this->_on_component_destroy_event(this, component);
+    component->get_on_destroy_event().invoke(component);
+    this->_on_component_destroy_event.invoke(this, component);
     component->unregister_component();
     this->_components->erase(this->_components->begin() + index);
 }
@@ -120,8 +120,8 @@ void Entity::destroy_component(const std::type_info &type_info) {
 
 void Entity::destroy_all_components() {
     for (auto &component : *this->_components) {
-        component->on_destroy_event();
-        this->_on_component_destroy_event(this, component);
+        component->get_on_destroy_event().invoke(component);
+        this->_on_component_destroy_event.invoke(this, component);
         component->unregister_component();
     }
 
@@ -133,7 +133,7 @@ Component *Entity::_register_created_component(Component component) {
         Component *registered_component = component.register_component();
 
         this->_components->push_back(registered_component);
-        this->_on_component_create_event(this, registered_component);
+        this->_on_component_create_event.invoke(this, registered_component);
 
         return registered_component;
     }
