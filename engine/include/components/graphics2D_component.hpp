@@ -8,6 +8,8 @@
 enum class RenderingMode { SCREEN_SPACE, WORLD_SPACE_2D, WORLD_SPACE_3D };
 
 class Graphics2DComponent : public Component {
+    friend class Space;
+
    public:
     Graphics2DComponent(EngineCore *engine_core, Entity *entity);
     ~Graphics2DComponent() override;
@@ -17,7 +19,7 @@ class Graphics2DComponent : public Component {
     inline Color get_color() const { return this->_tint; }
     inline void set_color(Color color) { this->_tint = color; }
     inline RenderingMode get_rendering_mode() const { return this->_rendering_mode; }
-    inline void set_rendering_mode(RenderingMode rendering_mode) { this->_rendering_mode = rendering_mode; }
+    inline void set_rendering_mode(RenderingMode rendering_mode) { this->_rendering_mode = rendering_mode; }  // TODO: Forbid this
     inline int get_layer() { return this->_layer; }
     inline void set_layer(int layer) { this->_layer = layer; }
     void draw();
@@ -27,6 +29,7 @@ class Graphics2DComponent : public Component {
     void unregister_component() override;
 
    private:
+    inline Vector2 _get_position() { return this->_transform_component->get_position(); }
     void _update_destination_rectangle();
     void _update_origin();
 

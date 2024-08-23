@@ -34,7 +34,7 @@ void Graphics2DComponent::draw() {
     DrawTexturePro(this->_texture, this->_source_rectangle, this->_destination_rectangle, this->_origin, this->_rotation, this->_tint);
 }
 
-Component *Graphics2DComponent::register_component() { return this->get_engine_core()->get_graphics_manager()->register_component(this); }
+Component *Graphics2DComponent::register_component() { return this->get_engine_core()->get_graphics_manager()->register_component(*this); }
 
 void Graphics2DComponent::unregister_component() { this->get_engine_core()->get_graphics_manager()->unregister_component(this); }
 

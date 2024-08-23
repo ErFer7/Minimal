@@ -1,30 +1,58 @@
 #pragma once
 
 #include <memory>
-#include <unordered_map>
+#include <string>
 #include <vector>
 
 #include "../types.hpp"
 #include "component_manager.hpp"
 #include "raylib.h"
 
+// TODO: Quad tree
+
 enum class SortingMode { NONE, TOP_TO_DOWN, ISOMETRIC };
 
-struct Layer {
-    int layer;
-    bool dirty;
-    SortingMode sorting_mode;
-    std::unique_ptr<std::vector<Graphics2DComponent *>> components;
-};
+// TODO: Move this to a separate file
+class Space {
+   public:
+    Space() : _sorting_mode(SortingMode::NONE) { this->_components = std::make_unique<std::vector<Graphics2DComponent *>>(); }
+    Space(const Space &other) { this->_copy(other); }
+    Space(Space &&other) { this->_move(std::move(other)); }
+    ~Space() = default;
 
-bool is_layer_null(Layer layer);
+    Space &operator=(const Space &other) noexcept {
+        this->_copy(other);
 
-struct Space {
-    bool dirty;
-    std::unique_ptr<std::vector<Layer>> _layers;
+        return *this;
+    }
+
+    inline SortingMode get_sorting_mode() const { return this->_sorting_mode; }
+    inline void set_sorting_mode(SortingMode sorting_mode) { this->_sorting_mode = sorting_mode; }
+
+    void add_component(Graphics2DComponent *component);
+    void remove_component(Graphics2DComponent *component);
+    void sort();
+    void draw();
+
+   private:
+    inline void _move(Space &&other) {
+        this->_components.reset();
+        this->_components = std::move(other._components);
+    }
+
+    inline void _copy(const Space &other) {
+        this->_components.reset();
+        this->_components = std::make_unique<std::vector<Graphics2DComponent *>>(*other._components);
+    }
+
+   private:
+    SortingMode _sorting_mode;
+    std::unique_ptr<std::vector<Graphics2DComponent *>> _components;
 };
 
 class GraphicsManager : public ComponentManager {
+    friend class Graphics2DComponent;
+
    public:
     GraphicsManager() = default;
     GraphicsManager(EngineCore *engine_core,
@@ -40,17 +68,29 @@ class GraphicsManager : public ComponentManager {
     void init() override;
     void update() override;
     void exit() override;
-    void set_layer_sorting_mode(int layer, SortingMode sorting_mode, RenderingMode rendering_mode);
-    SortingMode get_layer_sorting_mode(int layer, RenderingMode rendering_mode);
+
+    inline int get_screen_width() const { return this->_screen_width; }
+    inline int get_screen_height() const { return this->_screen_height; }
+    inline std::string get_title() const { return this->_title; }
+    inline bool is_resizable() const { return this->_resizable; }
+    inline bool is_fullscreen() const { return this->_fullscreen; }
+    inline bool is_showing_fps() const { return this->_show_fps; }
+    inline int get_target_fps() const { return this->_target_fps; }
+    inline Camera2D get_camera2D() const { return this->_camera2D; }
+    inline SortingMode get_world2d_space_sorting_mode() const { return this->_world2D_space.get_sorting_mode(); }
+    inline void set_world2d_space_sorting_mode(SortingMode sorting_mode) { this->_world2D_space.set_sorting_mode(sorting_mode); }
+    inline SortingMode get_screen_space_sorting_mode() const { return this->_screen_space.get_sorting_mode(); }
+    inline void set_screen_space_sorting_mode(SortingMode sorting_mode) { this->_screen_space.set_sorting_mode(sorting_mode); }
 
    protected:
-    Component *register_component(Component *component) override;
+    Component *register_component(Component component) override;
     void unregister_component(Component *component) override;
 
    private:
+    // TODO: Implement set methods for all of these
     int _screen_width;
     int _screen_height;
-    const char *_title;
+    std::string _title;
     bool _resizable;
     bool _fullscreen;
     bool _show_fps;
@@ -58,14 +98,4 @@ class GraphicsManager : public ComponentManager {
     Camera2D _camera2D;
     Space _screen_space;
     Space _world2D_space;
-    std::unordered_map<int, SortingMode> *_screen_space_layers_sorting_mode;
-    std::unordered_map<int, SortingMode> *_world2D_space_layers_sorting_mode;
-
-    void _update_layer(Graphics2DComponent *graphics2D_component, Layer *old_layer);
-    void _sort_layer_array(DynamicArray<Layer> *array);
-    void _draw_layer_array(DynamicArray<Layer> *array);
-    void _optimize_layer_array(DynamicArray<Layer> *array);
-    void _clear_layer_array(DynamicArray<Layer> *array);
-
-    friend class Graphics2DComponent;
 };
