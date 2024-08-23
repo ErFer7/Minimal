@@ -27,13 +27,15 @@ class Entity : public EngineCoreDependencyInjector {
     Entity(EngineCore *engine_core, Entity *parent);
     Entity(const Entity &other);
     Entity(Entity &&other) noexcept;
-    ~Entity();
+    virtual ~Entity();
 
     Entity &operator=(const Entity &other) noexcept {
         this->_copy(other);
 
         return *this;
     }
+
+    bool operator==(const Entity &other) const { return *this == other; }
 
     inline Entity *get_parent() const { return this->_parent; }
     inline Event<Entity *> &get_on_destroy_event() { return this->_on_destroy_event; }
@@ -46,14 +48,14 @@ class Entity : public EngineCoreDependencyInjector {
     T *create_child(Args &&...args) {
         this->_children->push_back(this->create<T>(this, std::forward<Args>(args)...));
 
-        T *child = &this->_children->back();
-        this->_on_child_create_event(child);
+        Entity *child = &this->_children->back();
+        this->_on_child_create_event.invoke(child);
 
-        return child;
+        return static_cast<T *>(child);
     }
 
     inline Entity *get_child(unsigned int index) const { return &this->_children->at(index); }
-    const unsigned int get_child_index(Entity *entity) const;
+    const unsigned int get_child_index(const Entity *entity) const;
     inline const unsigned int get_child_count() const { return this->_children->size(); }
     void destroy_child(unsigned int index);
     void destroy_all_children();

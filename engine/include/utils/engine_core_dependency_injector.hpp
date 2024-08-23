@@ -19,7 +19,7 @@ class EngineCoreDependencyInjector {
      */
     EngineCoreDependencyInjector(EngineCore *engine_core) : _engine_core_ref(engine_core){};
 
-    ~EngineCoreDependencyInjector() = default;
+    virtual ~EngineCoreDependencyInjector() = default;
 
     /**
      * Retrieves the EngineCore object associated with this injector.

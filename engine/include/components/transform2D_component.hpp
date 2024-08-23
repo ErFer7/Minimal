@@ -11,7 +11,7 @@ class Transform2DComponent : public Component {
     typedef TransformUpdateEvent::Listener TransformUpdateListener;
 
     Transform2DComponent(EngineCore *engine_core, Entity *entity);
-    ~Transform2DComponent() override = default;
+    ~Transform2DComponent() override { this->unregister_component(); };
 
     inline Transform2D get_transform() const { return this->_transform_system.get_absolute(); }
     inline Vector2 get_position() const { return this->_transform_system.get_absolute_position(); }
@@ -35,8 +35,8 @@ class Transform2DComponent : public Component {
     void scale(Vector2 scale);
 
    protected:
-    Component *register_component() override;
-    void unregister_component() override;
+    Component *register_component() override { return this; };
+    void unregister_component() override {};
 
    private:
     TransformSystem2D _transform_system;

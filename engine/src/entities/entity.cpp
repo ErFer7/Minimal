@@ -23,8 +23,8 @@ Entity::~Entity() {
     this->destroy_all_components();
 }
 
-const unsigned int Entity::get_child_index(Entity *entity) const {
-    auto it = std::find(this->_children->begin(), this->_children->end(), entity);
+const unsigned int Entity::get_child_index(const Entity *entity) const {
+    auto it = std::find(this->_children->begin(), this->_children->end(), *entity);
 
     if (it != this->_children->end()) {
         return std::distance(this->_children->begin(), it);

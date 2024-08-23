@@ -9,8 +9,10 @@
 
 class ComponentManager : public Manager {
    public:
-    ComponentManager() = default;
-    ComponentManager(EngineCore *engine_core) : Manager(engine_core){};
+    typedef std::vector<Component> ComponentVector;
+
+    ComponentManager() { this->_components = std::make_unique<std::vector<Component>>(); };
+    ComponentManager(EngineCore *engine_core) : Manager(engine_core) { this->_components = std::make_unique<std::vector<Component>>(); };
     ComponentManager(const ComponentManager &other) noexcept { this->_copy(other); }
     ComponentManager(ComponentManager &&other) noexcept { this->_move(std::move(other)); }
     ~ComponentManager() override = default;
@@ -21,15 +23,17 @@ class ComponentManager : public Manager {
         return *this;
     }
 
-    void update() override {};
-
    protected:
+    ComponentVector *get_components() { return this->_components.get(); }
+
     virtual inline Component *register_component(Component component) {
         this->_components->push_back(component);
         return &this->_components->back();
     }
 
-    virtual void unregister_component(Component *component);
+    virtual void unregister_component(Component *component) {
+        this->_components->erase(std::remove(this->_components->begin(), this->_components->end(), *component), this->_components->end());
+    }
 
    private:
     inline void _move(ComponentManager &&other) {

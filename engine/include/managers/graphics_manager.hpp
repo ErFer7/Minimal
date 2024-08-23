@@ -63,7 +63,7 @@ class GraphicsManager : public ComponentManager {
                     bool resizable = false,
                     bool fullscreen = false,
                     bool show_fps = false);
-    ~GraphicsManager() override;
+    ~GraphicsManager() override = default;
 
     void init() override;
     void update() override;

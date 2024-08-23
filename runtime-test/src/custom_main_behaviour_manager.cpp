@@ -20,6 +20,6 @@ void CustomMainBehaviourManager::update() {
 }
 
 void CustomMainBehaviourManager::exit() {
-    UnloadTexture(*this->_player->get_graphics_component()->get_texture());
-    UnloadTexture(*this->_ground->get_graphics_component()->get_texture());
+    UnloadTexture(this->_player->get_graphics_component()->get_texture());
+    UnloadTexture(this->_ground->get_graphics_component()->get_texture());
 }

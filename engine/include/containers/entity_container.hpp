@@ -14,7 +14,7 @@ class EntityContainer : public EngineCoreDependencyInjector {
 
     template <typename T = Entity, typename... Args>
     T *create_entity(Args &&...args) {
-        return this->_root.create_child(&this->_root, std::forward<Args>(args)...);
+        return static_cast<T *>(this->_root.create_child(std::forward<Args>(args)...));
     }
 
     void destroy_all_entities();
