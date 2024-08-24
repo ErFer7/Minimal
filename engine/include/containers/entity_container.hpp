@@ -10,7 +10,9 @@
 class EntityContainer : public EngineCoreDependencyInjector {
    public:
     EntityContainer() = default;
+
     EntityContainer(EngineCore *engine_core);
+
     ~EntityContainer();
 
     template <typename T, typename... Args>

@@ -19,4 +19,4 @@ Esta é uma game engine simples escrita em C++ que ainda está em desenvolviment
 
 ## Documentação
 
-* [Documentação](docs/index.md)
+* [Documentação](https://erfer7.github.io/Minimal/)

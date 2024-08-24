@@ -12,8 +12,11 @@ class ComponentManager : public Manager {
     typedef std::vector<Component *> ComponentVector;
 
     ComponentManager(const ComponentManager &other) noexcept = delete;
+
     ComponentManager(ComponentManager &&other) noexcept = delete;
-    ComponentManager(EngineCore *engine_core) : Manager(engine_core) { this->_components = std::make_unique<ComponentVector>(); };
+
+    ComponentManager(EngineCore *engine_core) : Manager(engine_core) { this->_components = std::make_unique<ComponentVector>(); }
+
     ~ComponentManager() override = default;
 
     ComponentManager &operator=(const ComponentManager &other) noexcept = delete;
