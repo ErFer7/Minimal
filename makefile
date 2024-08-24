@@ -2,6 +2,10 @@
 default:
 	cmake --build build
 
+.PHONY: setup
+setup:
+	cmake -B build
+
 .PHONY: debug
 debug:
 	cmake --build build --config Debug
@@ -39,16 +43,8 @@ test:
 	cmake --build build --target test
 
 .PHONY: test_run
-test_run:
+test_run: test
 	./build/test
-
-.PHONY: test_gdb
-test_gdb:
-	gdb ./build/test
-
-.PHONY: test_valgrind
-test_valgrind:
-	valgrind --leak-check=full ./build/test
 
 .PHONY: clean
 clean:
