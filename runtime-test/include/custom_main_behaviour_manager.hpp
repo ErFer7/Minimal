@@ -11,6 +11,7 @@ class CustomMainBehaviourManager final : public MainBehaviourManager {
     void exit() final;
 
    private:
-    Entity2D *_player;
-    Entity2D *_ground;
+    Entity2D *_entity_r;
+    Entity2D *_entity_g;
+    Entity2D *_entity_b;
 };
