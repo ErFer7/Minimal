@@ -19,21 +19,16 @@ class Entity : public EngineCoreDependencyInjector {
     friend class EntityContainer;
 
    public:
-    typedef std::vector<Entity> ChildrenVector;
-    typedef std::vector<Component *> ComponentsVector;
+    typedef std::vector<std::unique_ptr<Entity>> ChildrenVector;
+    typedef std::vector<std::unique_ptr<Component>> ComponentsVector;
 
    public:
-    Entity() = default;
+    Entity(const Entity &other) noexcept = delete;
+    Entity(Entity &&other) noexcept = delete;
     Entity(EngineCore *engine_core, Entity *parent);
-    Entity(const Entity &other);
-    Entity(Entity &&other) noexcept;
     virtual ~Entity();
 
-    Entity &operator=(const Entity &other) noexcept {
-        this->_copy(other);
-
-        return *this;
-    }
+    Entity &operator=(const Entity &other) noexcept = delete;
 
     bool operator==(const Entity &other) const { return *this == other; }
 
@@ -44,27 +39,27 @@ class Entity : public EngineCoreDependencyInjector {
     inline Event<Entity *, Component *> &get_on_component_create_event() { return this->_on_component_create_event; }
     inline Event<Entity *, Component *> &get_on_component_destroy_event() { return this->_on_component_destroy_event; }
 
-    template <typename T = Entity, typename... Args>
+    template <typename T, typename... Args>
     T *create_child(Args &&...args) {
-        this->_children->push_back(this->create<T>(this, std::forward<Args>(args)...));
+        this->_children->push_back(this->create_unique<T>(this, std::forward<Args>(args)...));
 
-        Entity *child = &this->_children->back();
+        Entity *child = this->_children->back().get();
         this->_on_child_create_event.invoke(child);
 
         return static_cast<T *>(child);
     }
 
-    inline Entity *get_child(unsigned int index) const { return &this->_children->at(index); }
-    const unsigned int get_child_index(const Entity *entity) const;
+    inline Entity *get_child(unsigned int index) const { return this->_children->at(index).get(); }
+    const unsigned int get_child_index(Entity *entity) const;
     inline const unsigned int get_child_count() const { return this->_children->size(); }
     void destroy_child(unsigned int index);
     void destroy_all_children();
 
     void destroy();
 
-    template <typename T = Component, typename... Args>
+    template <typename T, typename... Args>
     T *create_component(Args &&...args) {
-        return static_cast<T *>(this->_register_created_component(this->create<T>(this, std::forward<Args>(args)...)));
+        return static_cast<T *>(this->_register_created_component(this->create_unique<T>(this, std::forward<Args>(args)...)));
     }
 
     bool has_component(const std::type_info &type_info) const;
@@ -98,9 +93,7 @@ class Entity : public EngineCoreDependencyInjector {
     }
 
    private:
-    Component *_register_created_component(Component component);
-    void _move(Entity &&other);
-    void _copy(const Entity &other);
+    Component *_register_created_component(std::unique_ptr<Component> component);
 
    private:
     Entity *_parent;

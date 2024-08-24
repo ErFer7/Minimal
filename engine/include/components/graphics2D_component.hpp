@@ -25,7 +25,7 @@ class Graphics2DComponent : public Component {
     void draw();
 
    protected:
-    Component *register_component() override;
+    void register_component() override;
     void unregister_component() override;
 
    private:

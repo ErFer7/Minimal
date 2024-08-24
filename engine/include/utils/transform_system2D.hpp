@@ -6,7 +6,7 @@
 
 class TransformSystem2D {
    public:
-    TransformSystem2D() = default;
+    TransformSystem2D(){};
     ~TransformSystem2D() = default;
 
     inline const Transform2D get_absolute() const { return this->_absolute; }

@@ -9,43 +9,24 @@
 
 class ComponentManager : public Manager {
    public:
-    typedef std::vector<Component> ComponentVector;
+    typedef std::vector<Component *> ComponentVector;
 
-    ComponentManager() { this->_components = std::make_unique<std::vector<Component>>(); };
-    ComponentManager(EngineCore *engine_core) : Manager(engine_core) { this->_components = std::make_unique<std::vector<Component>>(); };
-    ComponentManager(const ComponentManager &other) noexcept { this->_copy(other); }
-    ComponentManager(ComponentManager &&other) noexcept { this->_move(std::move(other)); }
+    ComponentManager(const ComponentManager &other) noexcept = delete;
+    ComponentManager(ComponentManager &&other) noexcept = delete;
+    ComponentManager(EngineCore *engine_core) : Manager(engine_core) { this->_components = std::make_unique<ComponentVector>(); };
     ~ComponentManager() override = default;
 
-    ComponentManager &operator=(const ComponentManager &other) noexcept {
-        this->_copy(other);
-
-        return *this;
-    }
+    ComponentManager &operator=(const ComponentManager &other) noexcept = delete;
 
    protected:
     ComponentVector *get_components() { return this->_components.get(); }
 
-    virtual inline Component *register_component(Component component) {
-        this->_components->push_back(component);
-        return &this->_components->back();
-    }
+    virtual inline void register_component(Component *component) { this->_components->push_back(component); }
 
     virtual void unregister_component(Component *component) {
-        this->_components->erase(std::remove(this->_components->begin(), this->_components->end(), *component), this->_components->end());
+        this->_components->erase(std::remove(this->_components->begin(), this->_components->end(), component), this->_components->end());
     }
 
    private:
-    inline void _move(ComponentManager &&other) {
-        this->_components.reset();
-        this->_components = std::move(other._components);
-    }
-
-    void _copy(const ComponentManager &other) {
-        this->_components.reset();
-        this->_components = std::make_unique<std::vector<Component>>(*other._components);
-    }
-
-   private:
-    std::unique_ptr<std::vector<Component>> _components;
+    std::unique_ptr<ComponentVector> _components;
 };

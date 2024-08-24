@@ -135,9 +135,10 @@ void GraphicsManager::update() {
 
 void GraphicsManager::exit() { CloseWindow(); }
 
-Component *GraphicsManager::register_component(Component component) {
-    Component *registered_component = ComponentManager::register_component(component);
-    Graphics2DComponent *graphics2D_component = static_cast<Graphics2DComponent *>(registered_component);
+void GraphicsManager::register_component(Component *component) {
+    ComponentManager::register_component(component);
+
+    Graphics2DComponent *graphics2D_component = static_cast<Graphics2DComponent *>(component);
     RenderingMode rendering_mode = graphics2D_component->get_rendering_mode();
 
     if (rendering_mode == RenderingMode::WORLD_SPACE_2D) {
@@ -145,8 +146,6 @@ Component *GraphicsManager::register_component(Component component) {
     } else if (rendering_mode == RenderingMode::SCREEN_SPACE) {
         this->_screen_space.add_component(graphics2D_component);
     }
-
-    return registered_component;
 }
 
 void GraphicsManager::unregister_component(Component *component) {

@@ -22,7 +22,7 @@ class Component : public EngineCoreDependencyInjector {
     inline Event<Component *> *get_on_destroy_event() { return &this->_on_destroy_event; }
 
    protected:
-    virtual Component *register_component() { return nullptr; };
+    virtual void register_component() {};
     virtual void unregister_component() {};
 
    private:

@@ -7,8 +7,8 @@ void CustomMainBehaviourManager::init() {
     this->_player->get_transform_component()->set_position(Vector2{100.0f, 100.0f});
     this->_ground->get_transform_component()->set_position(Vector2{0.0f, 0.0f});
 
-    this->_player->get_graphics_component()->set_texture(LoadTexture("game/assets/Rectangle_64.png"));
-    this->_ground->get_graphics_component()->set_texture(LoadTexture("game/assets/Rectangle_64.png"));
+    this->_player->get_graphics_component()->set_texture(LoadTexture("runtime-test/assets/Rectangle_64.png"));
+    this->_ground->get_graphics_component()->set_texture(LoadTexture("runtime-test/assets/Rectangle_64.png"));
 
     this->_player->get_graphics_component()->set_color(RED);
     this->_ground->get_graphics_component()->set_color(GREEN);

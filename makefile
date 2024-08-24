@@ -3,7 +3,7 @@ DEBUG_FLAGS = -g -ggdb3
 RELEASE_FLAGS = -O3
 
 ENGINE_LIBS = -lraylib
-FLAGS = -Wall -Wextra -pedantic -std=c++20
+FLAGS = -Wall -Wextra -pedantic -std=c++20 -g -ggdb3
 
 ENGINE_SRC_DIR = ./engine/src
 ENGINE_LIB_DIR = ./engine/include
@@ -17,7 +17,7 @@ LIB = $(shell find $(ENGINE_LIB_DIR) -name '*.h') $(shell find $(GAME_LIB_DIR) -
 ENGINE_SRC := $(shell find $(ENGINE_SRC_DIR) -name '*.cpp')
 GAME_SRC := $(shell find $(GAME_SRC_DIR) -name '*.cpp')
 OBJ := $(patsubst $(ENGINE_SRC_DIR)/%, $(OBJ_DIR)/%,$(ENGINE_SRC:.cpp=.o)) $(patsubst $(GAME_SRC_DIR)/%, $(OBJ_DIR)/%,$(GAME_SRC:.cpp=.o))
-COMPILE_OBJ = $(COMPILER) $(CFLAGS) -c $< -o $@
+COMPILE_OBJ = $(COMPILER) $(FLAGS) -c $< -o $@
 
 NAME = TestGame
 EXECUTABLE = $(BIN_DIR)/$(NAME)
@@ -30,7 +30,7 @@ makedir:
 	mkdir -p $(OBJ_DIR)
 
 main: $(OBJ)
-	$(COMPILER) $(CFLAGS) -o $(EXECUTABLE) $(OBJ) $(ENGINE_LIBS)
+	$(COMPILER) $(FLAGS) -o $(EXECUTABLE) $(OBJ) $(ENGINE_LIBS)
 
 # Engine
 $(OBJ_DIR)/%.o: $(ENGINE_SRC_DIR)/%.cpp $(LIB)

@@ -10,7 +10,10 @@ Transform2DComponent::Transform2DComponent(EngineCore *engine_core, Entity *enti
     });
 
     this->_parent_transform = this->get_entity()->get_parent()->get_component<Transform2DComponent>();
-    this->_on_parent_transform_update_listener.subscribe(this->_parent_transform->get_on_update_event());
+
+    if (this->_parent_transform != nullptr) {
+        this->_on_parent_transform_update_listener.subscribe(this->_parent_transform->get_on_update_event());
+    }
 }
 
 void Transform2DComponent::set_position(Vector2 position) {

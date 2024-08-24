@@ -7,7 +7,6 @@ class BehaviourManager : public ComponentManager {
     friend class BehaviourComponent;
 
    public:
-    BehaviourManager() = default;
     BehaviourManager(EngineCore *engine_core) : ComponentManager(engine_core){};
     ~BehaviourManager() override = default;
 

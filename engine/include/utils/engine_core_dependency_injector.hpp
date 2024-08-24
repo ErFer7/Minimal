@@ -17,18 +17,18 @@ class EngineCoreDependencyInjector {
      *
      * engine_core: A pointer to the EngineCore object.
      */
-    EngineCoreDependencyInjector(EngineCore *engine_core) : _engine_core_ref(engine_core){};
+    EngineCoreDependencyInjector(EngineCore *engine_core) : _engine_core(engine_core){};
 
     virtual ~EngineCoreDependencyInjector() = default;
 
     /**
      * Retrieves the EngineCore object associated with this injector.
      */
-    inline EngineCore *get_engine_core() const { return this->_engine_core_ref; }
+    inline EngineCore *get_engine_core() const { return this->_engine_core; }
 
     template <typename T, typename... Args>
     T create(Args &&...args) {
-        return T(this->_engine_core_ref, std::forward<Args>(args)...);
+        return T(this->_engine_core, std::forward<Args>(args)...);
     }
 
     /**
@@ -40,14 +40,14 @@ class EngineCoreDependencyInjector {
      */
     template <typename T, typename... Args>
     T *create_heap_allocated(Args &&...args) {
-        return new T(this->_engine_core_ref, std::forward<Args>(args)...);
+        return new T(this->_engine_core, std::forward<Args>(args)...);
     }
 
     template <typename T, typename... Args>
     std::unique_ptr<T> create_unique(Args &&...args) {
-        return std::make_unique<T>(this->_engine_core_ref, std::forward<Args>(args)...);
+        return std::make_unique<T>(this->_engine_core, std::forward<Args>(args)...);
     }
 
    private:
-    EngineCore *_engine_core_ref;
+    EngineCore *_engine_core;
 };

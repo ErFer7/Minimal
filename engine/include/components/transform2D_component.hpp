@@ -35,7 +35,7 @@ class Transform2DComponent : public Component {
     void scale(Vector2 scale);
 
    protected:
-    Component *register_component() override { return this; };
+    void register_component() override {};
     void unregister_component() override {};
 
    private:

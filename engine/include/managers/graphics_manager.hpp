@@ -54,7 +54,6 @@ class GraphicsManager : public ComponentManager {
     friend class Graphics2DComponent;
 
    public:
-    GraphicsManager() = default;
     GraphicsManager(EngineCore *engine_core,
                     int screen_width,
                     int screen_height,
@@ -83,7 +82,7 @@ class GraphicsManager : public ComponentManager {
     inline void set_screen_space_sorting_mode(SortingMode sorting_mode) { this->_screen_space.set_sorting_mode(sorting_mode); }
 
    protected:
-    Component *register_component(Component component) override;
+    void register_component(Component *component) override;
     void unregister_component(Component *component) override;
 
    private:
