@@ -46,25 +46,28 @@ jobs:
             c_compiler: cl
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set reusable strings
-      id: strings
-      shell: bash
-      run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+      - name: Set reusable strings
+        id: strings
+        shell: bash
+        run: |
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Configure CMake
-      run: >
-        cmake -B build
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libxrandr-dev
 
-    - name: Build
-      run: cmake --build build --config ${{ matrix.build_type }} --target engine
+      - name: Configure CMake
+        run: >
+          cmake -B build
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
-    - name: Test
-      run: |
-        cmake --build build --config ${{ matrix.build_type }} --target test
-        ${{ github.workspace }}/build/test
+      - name: Build
+        run: cmake --build build --config ${{ matrix.build_type }} --target engine
+
+      - name: Test
+        run: |
+          cmake --build build --config ${{ matrix.build_type }} --target test
+          ${{ github.workspace }}/build/test
