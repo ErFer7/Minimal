@@ -37,3 +37,4 @@ obj/
 
 # Cmake
 build/
+.cache/

@@ -43,7 +43,7 @@ test:
 	cmake --build build --target test
 
 .PHONY: test_run
-test_run:
+test_run: test
 	./build/test
 
 .PHONY: clean
