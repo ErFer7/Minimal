@@ -25,6 +25,15 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
   endif()
 endif()
 
+# Fetch Catch2
+include(FetchContent)
+FetchContent_Declare(
+  catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG v3.0.1 # You can specify the version you need
+)
+FetchContent_MakeAvailable(catch2)
+
 # Engine library
 file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/engine/src/*.cpp")
 set(ENGINE_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/engine/include/")
@@ -33,9 +42,9 @@ target_include_directories(engine PUBLIC ${ENGINE_INCLUDE})
 target_link_libraries(engine PUBLIC raylib)
 
 # Tests
-# file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/test/*.cpp")
-# add_executable(tests ${TEST_SOURCES})
-# target_link_libraries(tests PRIVATE engine)
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/test/*.cpp")
+add_executable(test ${TEST_SOURCES})
+target_link_libraries(test PRIVATE engine Catch2::Catch2WithMain)
 
 # Runtime test
 file(GLOB_RECURSE RUNTIME_TEST_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/runtime-test/src/*.cpp")
