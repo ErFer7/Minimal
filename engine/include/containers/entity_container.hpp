@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <utility>
 
 #include "../entities/entity.hpp"
@@ -9,16 +10,18 @@
 class EntityContainer : public EngineCoreDependencyInjector {
    public:
     EntityContainer() = default;
+
     EntityContainer(EngineCore *engine_core);
+
     ~EntityContainer();
 
-    template <typename T = Entity, typename... Args>
+    template <typename T, typename... Args>
     T *create_entity(Args &&...args) {
-        return this->_root.create_child(&this->_root, std::forward<Args>(args)...);
+        return static_cast<T *>(this->_root->create_child<T>(std::forward<Args>(args)...));
     }
 
     void destroy_all_entities();
 
    private:
-    Entity _root;
+    std::unique_ptr<Entity> _root;
 };

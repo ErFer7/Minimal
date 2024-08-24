@@ -1,0 +1,49 @@
+name: CMake engine build with tests
+
+on:
+  pull_request:
+    branches:
+      - "*"
+    types: [synchronize, opened, reopened, ready_for_review]
+
+jobs:
+  build:
+    if: github.event.pull_request.draft == false
+    runs-on: ${{ matrix.os }}
+
+    # TODO: Add windows with cl and ubuntu with clang
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        build_type: [Release]
+        cpp_compiler: [g++]
+        include:
+          - os: ubuntu-latest
+            cpp_compiler: g++
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set reusable strings
+        id: strings
+        shell: bash
+        run: |
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev
+
+      - name: Configure CMake
+        run: >
+          cmake -B build
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.build_type }} --target engine
+
+      - name: Test
+        run: |
+          cmake --build build --config ${{ matrix.build_type }} --target test
+          ${{ github.workspace }}/build/test

@@ -1,18 +1,22 @@
 # Minimal
 
-# IN DEVELOPMENT, CURRENTLY BEING REFACTORED FROM SCRATCH
-
-This is a very simple game engine for personal projects
+[🇧🇷 PT-BR](readme/README_ptbr.md) [🇺🇸 EN-US](README.md)
 
 ---
 
-Execution order:
+This is a simple game engine written in C++ that is still in development.
 
-Main thread:
-* Entity management [Parallel]
-* Main custom loop update [Sequential]
-* Script components [Sequential]
-* Physics components [Parallel]
+---
 
-Graphics thread:
-* Graphical components [Parallel]
+## Branches and development
+
+* main: Stable version v0.0
+* development: Unstable version v0.2
+
+* [Roadmap](https://github.com/users/ErFer7/projects/10/views/1)
+
+---
+
+## Documentation
+
+* [Documentation](https://erfer7.github.io/Minimal/)

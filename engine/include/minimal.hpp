@@ -17,28 +17,8 @@
 #include "raymath.h"
 #include "types.hpp"
 
-/**
- * The MinimalEngine class is responsible for executing the main loop of the minimal engine.
- *
- * It provides a static template function `execute` that takes a type `T` as a template parameter,
- * which must be a subclass of `MainBehaviourManager`. The `execute` function initializes the engine core,
- * creates an instance of `T`, sets it as the main behaviour manager, and starts the main loop.
- *
- * The `execute` function assumes ownership of the engine core and deletes it when the main loop ends.
- */
 class MinimalEngine {
    public:
-    /**
-     * Executes the engine with the specified parameters.
-     *
-     * screen_width: The width of the screen.
-     * screen_height: The height of the screen.
-     * title: The title of the window.
-     * target_fps: The target frames per second (default is 60).
-     * resizable: Whether the window is resizable or not (default is false).
-     * fullscreen: Whether the window is fullscreen or not (default is false).
-     * show_fps: Whether to show the frames per second on the window (default is false).
-     */
     template <typename T>
     static void execute(int screen_width,
                         int screen_height,
