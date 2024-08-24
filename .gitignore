@@ -34,3 +34,6 @@
 # Directories for executables
 bin/
 obj/
+
+# Cmake
+build/
