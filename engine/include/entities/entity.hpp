@@ -50,8 +50,8 @@ class Entity : public EngineCoreDependencyInjector {
     }
 
     inline Entity *get_child(unsigned int index) const { return this->_children->at(index).get(); }
-    const unsigned int get_child_index(Entity *entity) const;
-    inline const unsigned int get_child_count() const { return this->_children->size(); }
+    unsigned int get_child_index(Entity *entity) const;
+    inline unsigned int get_child_count() const { return this->_children->size(); }
     void destroy_child(unsigned int index);
     void destroy_all_children();
 
@@ -65,9 +65,9 @@ class Entity : public EngineCoreDependencyInjector {
     bool has_component(const std::type_info &type_info) const;
     Component *get_component(unsigned int index) const;
     Component *get_component(const std::type_info &type_info) const;
-    const unsigned int get_component_index(Component *component) const;
-    const unsigned int get_component_index(const std::type_info &type_info) const;
-    inline const unsigned int get_component_count() const { return this->_components->size(); }
+    unsigned int get_component_index(Component *component) const;
+    unsigned int get_component_index(const std::type_info &type_info) const;
+    inline unsigned int get_component_count() const { return this->_components->size(); }
     void destroy_component(unsigned int index);
     void destroy_component(const std::type_info &type_info);
     void destroy_all_components();

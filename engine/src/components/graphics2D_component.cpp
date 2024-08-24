@@ -1,5 +1,7 @@
 #include "../../include/components/graphics2D_component.hpp"
 
+#include <raylib.h>
+
 #include "../../include/engine_core.hpp"
 #include "../../include/entities/entity.hpp"
 
@@ -18,6 +20,8 @@ Graphics2DComponent::Graphics2DComponent(EngineCore *engine_core, Entity *entity
         this->_rotation = transform->get_rotation();
         this->_update_destination_rectangle();
     });
+
+    this->_transform_update_listener.subscribe(this->_transform_component->get_on_update_event());
 }
 
 Graphics2DComponent::~Graphics2DComponent() { this->unregister_component(); }

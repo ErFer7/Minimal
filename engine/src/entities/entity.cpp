@@ -18,7 +18,7 @@ Entity::~Entity() {
     this->destroy_all_components();
 }
 
-const unsigned int Entity::get_child_index(Entity *entity) const {
+unsigned int Entity::get_child_index(Entity *entity) const {
     auto it = std::find(this->_children->begin(), this->_children->end(), std::unique_ptr<Entity>(entity));
 
     if (it != this->_children->end()) {
@@ -78,7 +78,7 @@ Component *Entity::get_component(const std::type_info &type_info) const {
     return nullptr;
 }
 
-const unsigned int Entity::get_component_index(Component *component) const {
+unsigned int Entity::get_component_index(Component *component) const {
     auto it = std::find(this->_components->begin(), this->_components->end(), std::unique_ptr<Component>(component));
 
     if (it != this->_components->end()) {
@@ -88,7 +88,7 @@ const unsigned int Entity::get_component_index(Component *component) const {
     return -1;
 }
 
-const unsigned int Entity::get_component_index(const std::type_info &type_info) const {
+unsigned int Entity::get_component_index(const std::type_info &type_info) const {
     unsigned int index = 0;
 
     for (auto &component : *this->_components) {

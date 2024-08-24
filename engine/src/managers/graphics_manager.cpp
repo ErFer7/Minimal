@@ -84,11 +84,7 @@ GraphicsManager::GraphicsManager(EngineCore *engine_core,
     this->_fullscreen = fullscreen;
     this->_show_fps = show_fps;
     this->_target_fps = target_fps;
-    this->_camera2D = {0};
-    this->_camera2D.target = (Vector2){0.0f, 0.0f};
-    this->_camera2D.offset = (Vector2){0.0f, 0.0f};
-    this->_camera2D.rotation = 0.0f;
-    this->_camera2D.zoom = 1.0f;
+    this->_camera2D = {Vector2{0.0f, 0.0f}, Vector2{0.0f, 0.0f}, 0.0f, 1.0f};
 }
 
 void GraphicsManager::init() {

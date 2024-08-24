@@ -1,6 +1,6 @@
 #pragma once
 
-#include <raymath.h>
+#include <raylib.h>
 
 #include "transform.hpp"
 
@@ -11,13 +11,13 @@ class TransformSystem2D {
 
     inline const Transform2D get_absolute() const { return this->_absolute; }
     inline const Vector2 get_absolute_position() const { return this->_absolute.position; }
-    inline const float get_absolute_rotation() const { return this->_absolute.rotation; }
+    inline float get_absolute_rotation() const { return this->_absolute.rotation; }
     inline const Vector2 get_absolute_scale() const { return this->_absolute.scale; }
     const Transform2D get_relative(Transform2D origin) const;
     inline const Vector2 get_relative_position(Vector2 origin_position) const {
         return Vector2Subtract(this->_absolute.position, origin_position);
     }
-    inline const float get_relative_rotation(float origin_rotation) const { return this->_absolute.rotation - origin_rotation; }
+    inline float get_relative_rotation(float origin_rotation) const { return this->_absolute.rotation - origin_rotation; }
     inline const Vector2 get_relative_scale(Vector2 origin_scale) const { return Vector2Divide(this->_absolute.scale, origin_scale); }
     inline void set_absolute(Transform2D result) { this->_absolute = result; }
     void set_relative(Transform2D origin, Transform2D offset);
