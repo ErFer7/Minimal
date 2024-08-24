@@ -8,6 +8,7 @@ class BehaviourManager : public ComponentManager {
 
    public:
     BehaviourManager(EngineCore *engine_core) : ComponentManager(engine_core){};
+
     ~BehaviourManager() override = default;
 
     void init() override;

@@ -16,8 +16,11 @@ enum class SortingMode { NONE, TOP_TO_DOWN, ISOMETRIC };
 class Space {
    public:
     Space() : _sorting_mode(SortingMode::NONE) { this->_components = std::make_unique<std::vector<Graphics2DComponent *>>(); }
+
     Space(const Space &other) { this->_copy(other); }
+
     Space(Space &&other) { this->_move(std::move(other)); }
+
     ~Space() = default;
 
     Space &operator=(const Space &other) noexcept {
@@ -27,11 +30,15 @@ class Space {
     }
 
     inline SortingMode get_sorting_mode() const { return this->_sorting_mode; }
+
     inline void set_sorting_mode(SortingMode sorting_mode) { this->_sorting_mode = sorting_mode; }
 
     void add_component(Graphics2DComponent *component);
+
     void remove_component(Graphics2DComponent *component);
+
     void sort();
+
     void draw();
 
    private:
@@ -47,6 +54,7 @@ class Space {
 
    private:
     SortingMode _sorting_mode;
+
     std::unique_ptr<std::vector<Graphics2DComponent *>> _components;
 };
 
@@ -62,27 +70,42 @@ class GraphicsManager : public ComponentManager {
                     bool resizable = false,
                     bool fullscreen = false,
                     bool show_fps = false);
+
     ~GraphicsManager() override = default;
 
     void init() override;
+
     void update() override;
+
     void exit() override;
 
     inline int get_screen_width() const { return this->_screen_width; }
+
     inline int get_screen_height() const { return this->_screen_height; }
+
     inline std::string get_title() const { return this->_title; }
+
     inline bool is_resizable() const { return this->_resizable; }
+
     inline bool is_fullscreen() const { return this->_fullscreen; }
+
     inline bool is_showing_fps() const { return this->_show_fps; }
+
     inline int get_target_fps() const { return this->_target_fps; }
+
     inline Camera2D get_camera2D() const { return this->_camera2D; }
+
     inline SortingMode get_world2d_space_sorting_mode() const { return this->_world2D_space.get_sorting_mode(); }
+
     inline void set_world2d_space_sorting_mode(SortingMode sorting_mode) { this->_world2D_space.set_sorting_mode(sorting_mode); }
+
     inline SortingMode get_screen_space_sorting_mode() const { return this->_screen_space.get_sorting_mode(); }
+
     inline void set_screen_space_sorting_mode(SortingMode sorting_mode) { this->_screen_space.set_sorting_mode(sorting_mode); }
 
    protected:
     void register_component(Component *component) override;
+
     void unregister_component(Component *component) override;
 
    private:

@@ -1,6 +1,7 @@
 #include "../include/blue_behavior.hpp"
 
 #include <math.h>
+
 #include <cstdlib>
 
 #include "components/transform2D_component.hpp"

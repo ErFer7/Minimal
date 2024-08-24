@@ -24,8 +24,11 @@ class Entity : public EngineCoreDependencyInjector {
 
    public:
     Entity(const Entity &other) noexcept = delete;
+
     Entity(Entity &&other) noexcept = delete;
+
     Entity(EngineCore *engine_core, Entity *parent);
+
     virtual ~Entity();
 
     Entity &operator=(const Entity &other) noexcept = delete;
@@ -33,10 +36,15 @@ class Entity : public EngineCoreDependencyInjector {
     bool operator==(const Entity &other) const { return *this == other; }
 
     inline Entity *get_parent() const { return this->_parent; }
+
     inline Event<Entity *> &get_on_destroy_event() { return this->_on_destroy_event; }
+
     inline Event<Entity *> &get_on_child_create_event() { return this->_on_child_create_event; }
+
     inline Event<Entity *> &get_on_child_destroy_event() { return this->_on_child_destroy_event; }
+
     inline Event<Entity *, Component *> &get_on_component_create_event() { return this->_on_component_create_event; }
+
     inline Event<Entity *, Component *> &get_on_component_destroy_event() { return this->_on_component_destroy_event; }
 
     template <typename T, typename... Args>
@@ -50,9 +58,13 @@ class Entity : public EngineCoreDependencyInjector {
     }
 
     inline Entity *get_child(unsigned int index) const { return this->_children->at(index).get(); }
+
     unsigned int get_child_index(Entity *entity) const;
+
     inline unsigned int get_child_count() const { return this->_children->size(); }
+
     void destroy_child(unsigned int index);
+
     void destroy_all_children();
 
     void destroy();
@@ -63,13 +75,21 @@ class Entity : public EngineCoreDependencyInjector {
     }
 
     bool has_component(const std::type_info &type_info) const;
+
     Component *get_component(unsigned int index) const;
+
     Component *get_component(const std::type_info &type_info) const;
+
     unsigned int get_component_index(Component *component) const;
+
     unsigned int get_component_index(const std::type_info &type_info) const;
+
     inline unsigned int get_component_count() const { return this->_components->size(); }
+
     void destroy_component(unsigned int index);
+
     void destroy_component(const std::type_info &type_info);
+
     void destroy_all_components();
 
     template <typename T>

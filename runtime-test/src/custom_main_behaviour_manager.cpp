@@ -1,7 +1,8 @@
 #include "../include/custom_main_behaviour_manager.hpp"
-#include "../include/red_behavior.hpp"
-#include "../include/green_behavior.hpp"
+
 #include "../include/blue_behavior.hpp"
+#include "../include/green_behavior.hpp"
+#include "../include/red_behavior.hpp"
 
 void CustomMainBehaviourManager::init() {
     this->_entity_r = this->get_engine_core()->get_entity_container()->create_entity<Entity2D>();
@@ -25,8 +26,7 @@ void CustomMainBehaviourManager::init() {
     this->_entity_b->create_component<BlueBehavior>();
 }
 
-void CustomMainBehaviourManager::update() {
-}
+void CustomMainBehaviourManager::update() {}
 
 void CustomMainBehaviourManager::exit() {
     UnloadTexture(this->_entity_r->get_graphics_component()->get_texture());
