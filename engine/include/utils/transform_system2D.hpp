@@ -1,42 +1,42 @@
 #pragma once
 
+#include <raylib.h>
+
 #include "transform.hpp"
 
 class TransformSystem2D {
    public:
-    TransformSystem2D();
+    TransformSystem2D(){};
     ~TransformSystem2D() = default;
 
-    inline const Transform2D get_origin() const { return this->_origin; }
-    inline const Transform2D get_offset() const { return this->_offset; }
-    inline const Transform2D get_result() const { return this->_result; }
-    inline const Vector2 get_origin_position() const { return this->_origin.get_position(); }
-    inline const float get_origin_rotation() const { return this->_origin.get_rotation(); }
-    inline const Vector2 get_origin_scale() const { return this->_origin.get_scale(); }
-    inline const Vector2 get_offset_position() const { return this->_offset.get_position(); }
-    inline const float get_offset_rotation() const { return this->_offset.get_rotation(); }
-    inline const Vector2 get_offset_scale() const { return this->_offset.get_scale(); }
-    inline const Vector2 get_result_position() const { return this->_result.get_position(); }
-    inline const float get_result_rotation() const { return this->_result.get_rotation(); }
-    inline const Vector2 get_result_scale() const { return this->_result.get_scale(); }
-    void set_origin(Transform2D origin);
-    void set_offset(Transform2D offset);
-    void set_result(Transform2D result);
-    void set_origin_position(Vector2 position);
-    void set_origin_rotation(float rotation);
-    void set_origin_scale(Vector2 scale);
-    void set_offset_position(Vector2 position);
-    void set_offset_rotation(float rotation);
-    void set_offset_scale(Vector2 scale);
-    void set_result_position(Vector2 position);
-    void set_result_rotation(float rotation);
-    void set_result_scale(Vector2 scale);
+    inline const Transform2D get_absolute() const { return this->_absolute; }
+    inline const Vector2 get_absolute_position() const { return this->_absolute.position; }
+    inline float get_absolute_rotation() const { return this->_absolute.rotation; }
+    inline const Vector2 get_absolute_scale() const { return this->_absolute.scale; }
+    const Transform2D get_relative(Transform2D origin) const;
+    inline const Vector2 get_relative_position(Vector2 origin_position) const {
+        return Vector2Subtract(this->_absolute.position, origin_position);
+    }
+    inline float get_relative_rotation(float origin_rotation) const { return this->_absolute.rotation - origin_rotation; }
+    inline const Vector2 get_relative_scale(Vector2 origin_scale) const { return Vector2Divide(this->_absolute.scale, origin_scale); }
+    inline void set_absolute(Transform2D result) { this->_absolute = result; }
+    void set_relative(Transform2D origin, Transform2D offset);
+    inline void set_absolute_position(Vector2 position) { this->_absolute.position = position; }
+    inline void set_absolute_rotation(float rotation) { this->_absolute.rotation = rotation; }
+    inline void set_absolute_scale(Vector2 scale) { this->_absolute.scale = scale; }
+    inline void set_relative_position(Vector2 origin_position, Vector2 offset_position) {
+        this->_absolute.position = Vector2Subtract(offset_position, origin_position);
+    }
+    inline void set_relative_rotation(float origin_rotation, float offset_rotation) {
+        this->_absolute.rotation = offset_rotation - origin_rotation;
+    }
+    inline void set_relative_scale(Vector2 origin_scale, Vector2 offset_scale) {
+        this->_absolute.scale = Vector2Divide(offset_scale, origin_scale);
+    }
+    inline void translate(Vector2 translation) { this->_absolute.position = Vector2Add(this->_absolute.position, translation); }
+    inline void rotate(float rotation) { this->_absolute.rotation = this->_absolute.rotation + rotation; }
+    inline void scale(Vector2 scale) { this->_absolute.scale = Vector2Multiply(this->_absolute.scale, scale); }
 
    private:
-    Transform2D _origin;
-    Transform2D _offset;
-    Transform2D _result;
-
-    void _update_result();
-    void _update_offset();
+    Transform2D _absolute;
 };

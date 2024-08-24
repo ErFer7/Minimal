@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cassert>
 #include <memory>
-#include <utility>
 #include <vector>
 
 #include "../../include/components/component.hpp"
@@ -14,17 +13,13 @@ Entity::Entity(EngineCore *engine_core, Entity *parent) : EngineCoreDependencyIn
     this->_components = std::make_unique<ComponentsVector>();
 }
 
-Entity::Entity(const Entity &other) { this->_copy(other); }
-
-Entity::Entity(Entity &&other) noexcept { this->_move(std::move(other)); }
-
 Entity::~Entity() {
     this->destroy_all_children();
     this->destroy_all_components();
 }
 
-const unsigned int Entity::get_child_index(Entity *entity) const {
-    auto it = std::find(this->_children->begin(), this->_children->end(), entity);
+unsigned int Entity::get_child_index(Entity *entity) const {
+    auto it = std::find(this->_children->begin(), this->_children->end(), std::unique_ptr<Entity>(entity));
 
     if (it != this->_children->end()) {
         return std::distance(this->_children->begin(), it);
@@ -34,19 +29,21 @@ const unsigned int Entity::get_child_index(Entity *entity) const {
 }
 
 void Entity::destroy_child(unsigned int index) {
-    Entity *child = &this->_children->at(index);
+    Entity *child = this->_children->at(index).get();
 
-    child->_on_destroy_event(child);
-    this->_on_child_destroy_event(child);
+    child->get_on_destroy_event().invoke(child);
+    this->_on_child_destroy_event.invoke(child);
     child->destroy_all_children();
     this->_children->erase(this->_children->begin() + index);
 }
 
 void Entity::destroy_all_children() {
+    assert(this->_children != nullptr);
+
     for (auto it = this->_children->begin(); it != this->_children->end(); ++it) {
-        Entity *child = &*it;  // it is converted to Entity and then & gets the address of the Entity :p
-        child->_on_destroy_event(child);
-        this->_on_child_destroy_event(child);
+        Entity *child = it->get();
+        child->get_on_destroy_event().invoke(child);
+        this->_on_child_destroy_event.invoke(child);
         child->destroy_all_children();
     }
 
@@ -69,20 +66,20 @@ bool Entity::has_component(const std::type_info &type_info) const {
     return false;
 }
 
-Component *Entity::get_component(unsigned int index) const { return this->_components->at(index); }
+Component *Entity::get_component(unsigned int index) const { return this->_components->at(index).get(); }
 
 Component *Entity::get_component(const std::type_info &type_info) const {
     for (auto &component : *this->_components) {
         if (typeid(*component) == type_info) {
-            return component;
+            return component.get();
         }
     }
 
     return nullptr;
 }
 
-const unsigned int Entity::get_component_index(Component *component) const {
-    auto it = std::find(this->_components->begin(), this->_components->end(), component);
+unsigned int Entity::get_component_index(Component *component) const {
+    auto it = std::find(this->_components->begin(), this->_components->end(), std::unique_ptr<Component>(component));
 
     if (it != this->_components->end()) {
         return std::distance(this->_components->begin(), it);
@@ -91,7 +88,7 @@ const unsigned int Entity::get_component_index(Component *component) const {
     return -1;
 }
 
-const unsigned int Entity::get_component_index(const std::type_info &type_info) const {
+unsigned int Entity::get_component_index(const std::type_info &type_info) const {
     unsigned int index = 0;
 
     for (auto &component : *this->_components) {
@@ -106,9 +103,9 @@ const unsigned int Entity::get_component_index(const std::type_info &type_info) 
 }
 
 void Entity::destroy_component(unsigned int index) {
-    Component *component = this->_components->at(index);
-    component->on_destroy_event();
-    this->_on_component_destroy_event(this, component);
+    Component *component = this->_components->at(index).get();
+    component->get_on_destroy_event()->invoke(component);
+    this->_on_component_destroy_event.invoke(this, component);
     component->unregister_component();
     this->_components->erase(this->_components->begin() + index);
 }
@@ -120,55 +117,25 @@ void Entity::destroy_component(const std::type_info &type_info) {
 
 void Entity::destroy_all_components() {
     for (auto &component : *this->_components) {
-        component->on_destroy_event();
-        this->_on_component_destroy_event(this, component);
+        component->get_on_destroy_event()->invoke(component.get());
+        this->_on_component_destroy_event.invoke(this, component.get());
         component->unregister_component();
     }
 
     this->_components->clear();
 }
 
-Component *Entity::_register_created_component(Component component) {
-    if (!component.is_unique() || !this->has_component(typeid(component))) {
-        Component *registered_component = component.register_component();
+Component *Entity::_register_created_component(std::unique_ptr<Component> component) {
+    if (!component->is_unique() || !this->has_component(typeid(component))) {
+        this->_components->push_back(std::move(component));
 
-        this->_components->push_back(registered_component);
-        this->_on_component_create_event(this, registered_component);
+        Component *component_raw_ref = this->_components->back().get();
 
-        return registered_component;
+        component_raw_ref->register_component();
+        this->_on_component_create_event.invoke(this, component_raw_ref);
+
+        return component_raw_ref;
     }
 
     return nullptr;
-}
-
-void Entity::_move(Entity &&other) {
-    if (this != &other) {
-        this->_children.reset();
-        this->_components.reset();
-
-        this->_parent = other._parent;
-        this->_children = std::move(other._children);
-        this->_components = std::move(other._components);
-        this->_on_destroy_event = other._on_destroy_event;
-        this->_on_child_create_event = other._on_child_create_event;
-        this->_on_child_destroy_event = other._on_child_destroy_event;
-        this->_on_component_create_event = other._on_component_create_event;
-        this->_on_component_destroy_event = other._on_component_destroy_event;
-    }
-}
-
-void Entity::_copy(const Entity &other) {
-    if (this != &other) {
-        this->_children.reset();
-        this->_components.reset();
-
-        this->_parent = other._parent;
-        this->_children = std::make_unique<ChildrenVector>(*other._children);
-        this->_components = std::make_unique<ComponentsVector>(*other._components);
-        this->_on_destroy_event = other._on_destroy_event;
-        this->_on_child_create_event = other._on_child_create_event;
-        this->_on_child_destroy_event = other._on_child_destroy_event;
-        this->_on_component_create_event = other._on_component_create_event;
-        this->_on_component_destroy_event = other._on_component_destroy_event;
-    }
 }

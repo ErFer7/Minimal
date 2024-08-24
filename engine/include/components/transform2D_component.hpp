@@ -7,38 +7,40 @@
 
 class Transform2DComponent : public Component {
    public:
-    Transform2DComponent(EngineCore *engine_core, Entity *entity);
-    ~Transform2DComponent() override;
+    typedef Event<Transform2DComponent *> TransformUpdateEvent;
+    typedef TransformUpdateEvent::Listener TransformUpdateListener;
 
-    inline Vector2 get_local_position() const { return this->_transform_system.get_offset_position(); }
-    inline float get_local_rotation() const { return this->_transform_system.get_offset_rotation(); }
-    inline Vector2 get_local_scale() const { return this->_transform_system.get_offset_scale(); }
-    inline Vector2 get_world_position() { return this->_transform_system.get_result_position(); }
-    inline float get_world_rotation() { return this->_transform_system.get_result_rotation(); }
-    inline Vector2 get_world_scale() { return this->_transform_system.get_result_scale(); }
-    inline Transform2D get_local_transform() { return this->_transform_system.get_offset(); }
-    inline Transform2D get_world_transform() { return this->_transform_system.get_result(); }
-    void set_local_position(Vector2 position);
-    void set_local_rotation(float rotation);
-    void set_local_scale(Vector2 scale);
-    void set_local_scale(float scale);
-    void set_world_position(Vector2 position);
-    void set_world_rotation(float rotation);
-    void set_world_scale(Vector2 scale);
-    void set_world_scale(float scale);
+    Transform2DComponent(EngineCore *engine_core, Entity *entity);
+    ~Transform2DComponent() override { this->unregister_component(); };
+
+    inline Transform2D get_transform() const { return this->_transform_system.get_absolute(); }
+    inline Vector2 get_position() const { return this->_transform_system.get_absolute_position(); }
+    inline float get_rotation() const { return this->_transform_system.get_absolute_rotation(); }
+    inline Vector2 get_scale() const { return this->_transform_system.get_absolute_scale(); }
+    inline Transform2D get_relative_transform() const {
+        return this->_transform_system.get_relative(this->_parent_transform->get_transform());
+    }
+    inline Vector2 get_relative_position() const { return this->get_relative_transform().position; }
+    inline float get_relative_rotation() const { return this->get_relative_transform().rotation; }
+    inline Vector2 get_relative_scale() const { return this->get_relative_transform().scale; }
+    inline TransformUpdateEvent *get_on_update_event() { return &this->_on_update_event; }
+    void set_position(Vector2 position);
+    void set_rotation(float rotation);
+    void set_scale(Vector2 scale);
+    void set_relative_position(Vector2 position);
+    void set_relative_rotation(float rotation);
+    void set_relative_scale(Vector2 scale);
     void translate(Vector2 translation);
     void rotate(float rotation);
     void scale(Vector2 scale);
-    void scale(float scale);
 
    protected:
-    Component *register_component() override;
-    void unregister_component() override;
-
-   private:
-    void _on_parent_transform_updated_callback(Transform2DComponent *parent_transform);
+    void register_component() override {};
+    void unregister_component() override {};
 
    private:
     TransformSystem2D _transform_system;
-    Event<Transform2DComponent *> _on_update;
+    TransformUpdateEvent _on_update_event;
+    TransformUpdateListener _on_parent_transform_update_listener;
+    Transform2DComponent *_parent_transform;
 };

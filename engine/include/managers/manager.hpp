@@ -5,7 +5,6 @@
 
 class Manager : public EngineCoreDependencyInjector {
    public:
-    Manager() = default;
     Manager(EngineCore *engine_core) : EngineCoreDependencyInjector(engine_core){};
     virtual ~Manager() = default;
 

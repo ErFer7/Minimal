@@ -12,6 +12,6 @@ class BehaviourComponent : public Component {
     virtual void update() = 0;
 
    protected:
-    Component *register_component() override;
+    void register_component() override;
     void unregister_component() override;
 };
