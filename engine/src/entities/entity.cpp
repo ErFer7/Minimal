@@ -89,7 +89,7 @@ void Entity::destroy_all_components() {
 }
 
 Component *Entity::_register_created_component(std::unique_ptr<Component> component) {
-    if (!component->is_unique() || !this->_has_component(typeid(component))) {
+    if (!component->is_unique() || !this->_has_component(typeid(*component))) {
         this->_components->push_back(std::move(component));
 
         Component *component_raw_ref = this->_components->back().get();
@@ -100,7 +100,7 @@ Component *Entity::_register_created_component(std::unique_ptr<Component> compon
         return component_raw_ref;
     }
 
-    return nullptr;  // TODO: Thwow an exception here
+    return nullptr;  // TODO: Throw an exception here
 }
 
 bool Entity::_has_component(const std::type_info &type_info) const {
