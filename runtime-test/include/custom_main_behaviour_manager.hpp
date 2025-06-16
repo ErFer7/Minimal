@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../engine/include/minimal.hpp"
+#include "entities/entity2D.hpp"
 
 class CustomMainBehaviourManager final : public MainBehaviourManager {
    public:
@@ -18,4 +19,5 @@ class CustomMainBehaviourManager final : public MainBehaviourManager {
     Entity2D *_entity_r;
     Entity2D *_entity_g;
     Entity2D *_entity_b;
+    Entity2D *_child;
 };

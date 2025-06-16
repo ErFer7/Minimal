@@ -4,10 +4,12 @@
 #include "../utils/event.hpp"
 #include "../utils/transform_system2D.hpp"
 #include "component.hpp"
+#include "raylib.h"
+#include "utils/transform.hpp"
 
 class Transform2DComponent : public Component {
    public:
-    typedef Event<Transform2DComponent *> TransformUpdateEvent;
+    typedef Event<Vector2, Transform2D> TransformUpdateEvent;
     typedef TransformUpdateEvent::Listener TransformUpdateListener;
 
     Transform2DComponent(EngineCore *engine_core, Entity *entity);

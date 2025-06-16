@@ -1,7 +1,9 @@
 #include "../../include/entities/entity.hpp"
 
-#include <algorithm>
+#include <math.h>
+
 #include <cassert>
+#include <cstddef>
 #include <memory>
 #include <vector>
 
@@ -18,11 +20,11 @@ Entity::~Entity() {
     this->destroy_all_components();
 }
 
-unsigned int Entity::get_child_index(Entity *entity) const {
-    auto it = std::find(this->_children->begin(), this->_children->end(), std::unique_ptr<Entity>(entity));
-
-    if (it != this->_children->end()) {
-        return std::distance(this->_children->begin(), it);
+int Entity::get_child_index(Entity *entity) const {
+    for (size_t i = 0; i < this->_children->size(); i++) {
+        if (this->_children->at(i).get() == entity) {
+            return i;
+        }
     }
 
     return -1;
@@ -56,47 +58,13 @@ void Entity::destroy() {
     this->_parent->destroy_child(this->_parent->get_child_index(this));
 }
 
-bool Entity::has_component(const std::type_info &type_info) const {
-    for (auto &component : *this->_components) {
-        if (typeid(*component) == type_info) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 Component *Entity::get_component(unsigned int index) const { return this->_components->at(index).get(); }
 
-Component *Entity::get_component(const std::type_info &type_info) const {
-    for (auto &component : *this->_components) {
-        if (typeid(*component) == type_info) {
-            return component.get();
+int Entity::get_component_index(Component *component) const {
+    for (size_t i = 0; i < this->_components->size(); i++) {
+        if (this->_components->at(i).get() == component) {
+            return i;
         }
-    }
-
-    return nullptr;
-}
-
-unsigned int Entity::get_component_index(Component *component) const {
-    auto it = std::find(this->_components->begin(), this->_components->end(), std::unique_ptr<Component>(component));
-
-    if (it != this->_components->end()) {
-        return std::distance(this->_components->begin(), it);
-    }
-
-    return -1;
-}
-
-unsigned int Entity::get_component_index(const std::type_info &type_info) const {
-    unsigned int index = 0;
-
-    for (auto &component : *this->_components) {
-        if (typeid(*component) == type_info) {
-            return index;
-        }
-
-        index++;
     }
 
     return -1;
@@ -110,11 +78,6 @@ void Entity::destroy_component(unsigned int index) {
     this->_components->erase(this->_components->begin() + index);
 }
 
-void Entity::destroy_component(const std::type_info &type_info) {
-    unsigned int index = this->get_component_index(type_info);
-    this->destroy_component(index);
-}
-
 void Entity::destroy_all_components() {
     for (auto &component : *this->_components) {
         component->get_on_destroy_event()->invoke(component.get());
@@ -126,7 +89,7 @@ void Entity::destroy_all_components() {
 }
 
 Component *Entity::_register_created_component(std::unique_ptr<Component> component) {
-    if (!component->is_unique() || !this->has_component(typeid(component))) {
+    if (!component->is_unique() || !this->_has_component(typeid(component))) {
         this->_components->push_back(std::move(component));
 
         Component *component_raw_ref = this->_components->back().get();
@@ -137,5 +100,44 @@ Component *Entity::_register_created_component(std::unique_ptr<Component> compon
         return component_raw_ref;
     }
 
+    return nullptr;  // TODO: Thwow an exception here
+}
+
+bool Entity::_has_component(const std::type_info &type_info) const {
+    for (auto &component : *this->_components) {
+        if (typeid(*component) == type_info) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+Component *Entity::_get_component(const std::type_info &type_info) const {
+    for (auto &component : *this->_components) {
+        if (typeid(*component) == type_info) {
+            return component.get();
+        }
+    }
+
     return nullptr;
+}
+
+int Entity::_get_component_index(const std::type_info &type_info) const {
+    unsigned int index = 0;
+
+    for (auto &component : *this->_components) {
+        if (typeid(*component) == type_info) {
+            return index;
+        }
+
+        index++;
+    }
+
+    return -1;
+}
+
+void Entity::_destroy_component(const std::type_info &type_info) {
+    unsigned int index = this->_get_component_index(type_info);
+    this->destroy_component(index);
 }
