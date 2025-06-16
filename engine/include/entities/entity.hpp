@@ -33,7 +33,15 @@ class Entity : public EngineCoreDependencyInjector {
 
     Entity &operator=(const Entity &other) noexcept = delete;
 
-    bool operator==(const Entity &other) const { return *this == other; }
+    Entity &operator=(Entity &&other) noexcept = delete;
+
+    Entity operator*() = delete;
+
+    const Entity operator*() const = delete;
+
+    Entity *operator&() = delete;
+
+    const Entity *operator&() const = delete;
 
     inline Entity *get_parent() const { return this->_parent; }
 
@@ -59,7 +67,7 @@ class Entity : public EngineCoreDependencyInjector {
 
     inline Entity *get_child(unsigned int index) const { return this->_children->at(index).get(); }
 
-    unsigned int get_child_index(Entity *entity) const;
+    int get_child_index(Entity *entity) const;
 
     inline unsigned int get_child_count() const { return this->_children->size(); }
 
@@ -74,46 +82,46 @@ class Entity : public EngineCoreDependencyInjector {
         return static_cast<T *>(this->_register_created_component(this->create_unique<T>(this, std::forward<Args>(args)...)));
     }
 
-    bool has_component(const std::type_info &type_info) const;
-
     Component *get_component(unsigned int index) const;
 
-    Component *get_component(const std::type_info &type_info) const;
-
-    unsigned int get_component_index(Component *component) const;
-
-    unsigned int get_component_index(const std::type_info &type_info) const;
+    int get_component_index(Component *component) const;
 
     inline unsigned int get_component_count() const { return this->_components->size(); }
 
     void destroy_component(unsigned int index);
 
-    void destroy_component(const std::type_info &type_info);
-
     void destroy_all_components();
 
     template <typename T>
     inline bool has_component() const {
-        return this->has_component(typeid(T));
+        return this->_has_component(typeid(T));
     }
 
     template <typename T>
     inline T *get_component() const {
-        return static_cast<T *>(this->get_component(typeid(T)));
+        return static_cast<T *>(this->_get_component(typeid(T)));
     }
 
     template <typename T>
-    inline unsigned int get_component_index() const {
-        return this->get_component_index(typeid(T));
+    inline int get_component_index() const {
+        return this->_get_component_index(typeid(T));
     }
 
     template <typename T>
-    inline void remove_component() {
-        this->destroy_component(typeid(T));
+    inline void destroy_component() {
+        this->_destroy_component(typeid(T));
     }
 
    private:
     Component *_register_created_component(std::unique_ptr<Component> component);
+
+    bool _has_component(const std::type_info &type_info) const;
+
+    Component *_get_component(const std::type_info &type_info) const;
+
+    int _get_component_index(const std::type_info &type_info) const;
+
+    void _destroy_component(const std::type_info &type_info);
 
    private:
     Entity *_parent;
