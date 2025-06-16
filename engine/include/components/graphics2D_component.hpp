@@ -41,9 +41,7 @@ class Graphics2DComponent : public Component {
    private:
     inline Vector2 _get_position() { return this->_transform_component->get_position(); }
 
-    void _update_destination_rectangle();
-
-    void _update_origin();
+    void _update_transform();
 
    private:
     Texture2D _texture;

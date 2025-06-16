@@ -2,6 +2,7 @@
 
 #include <raylib.h>
 
+#include "raymath.h"
 #include "transform.hpp"
 
 class TransformSystem2D {
@@ -39,22 +40,36 @@ class TransformSystem2D {
     inline void set_absolute_scale(Vector2 scale) { this->_absolute.scale = scale; }
 
     inline void set_relative_position(Vector2 origin_position, Vector2 offset_position) {
-        this->_absolute.position = Vector2Subtract(offset_position, origin_position);
+        this->_absolute.position = Vector2Add(origin_position, offset_position);
     }
 
-    inline void set_relative_rotation(float origin_rotation, float offset_rotation) {
-        this->_absolute.rotation = offset_rotation - origin_rotation;
+    void set_relative_rotation(Vector2 origin, float origin_rotation, float offset_rotation) {
+        float diff_rotation = offset_rotation - (this->_absolute.rotation - origin_rotation);
+        this->rotate(origin, diff_rotation);
     }
 
-    inline void set_relative_scale(Vector2 origin_scale, Vector2 offset_scale) {
-        this->_absolute.scale = Vector2Divide(offset_scale, origin_scale);
+    void set_relative_scale(Vector2 origin, Vector2 origin_scale, Vector2 offset_scale) {
+        Vector2 diff_scale = Vector2Divide(offset_scale, Vector2Divide(this->_absolute.scale, origin_scale));
+        this->scale(origin, diff_scale);
     }
 
     inline void translate(Vector2 translation) { this->_absolute.position = Vector2Add(this->_absolute.position, translation); }
 
-    inline void rotate(float rotation) { this->_absolute.rotation = this->_absolute.rotation + rotation; }
+    void rotate(Vector2 origin, float rotation) {
+        this->_absolute.position = Vector2Subtract(this->_absolute.position, origin);
+        this->_absolute.position = Vector2Rotate(this->_absolute.position, DEG2RAD * rotation);
+        this->_absolute.rotation = this->_absolute.rotation + rotation;
+        this->_absolute.position = Vector2Add(this->_absolute.position, origin);
+    }
 
-    inline void scale(Vector2 scale) { this->_absolute.scale = Vector2Multiply(this->_absolute.scale, scale); }
+    void scale(Vector2 origin, Vector2 scale) {
+        this->_absolute.position = Vector2Subtract(this->_absolute.position, origin);
+        this->_absolute.position = Vector2Rotate(this->_absolute.position, DEG2RAD * -this->_absolute.rotation);
+        this->_absolute.position = Vector2Multiply(this->_absolute.position, scale);
+        this->_absolute.scale = Vector2Multiply(this->_absolute.scale, scale);
+        this->_absolute.position = Vector2Rotate(this->_absolute.position, DEG2RAD * this->_absolute.rotation);
+        this->_absolute.position = Vector2Add(this->_absolute.position, origin);
+    }
 
    private:
     Transform2D _absolute;

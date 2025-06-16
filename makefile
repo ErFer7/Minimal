@@ -46,6 +46,14 @@ test:
 test_run: test
 	./build/test
 
+.PHONY: test_debug
+test_debug: test
+	cmake --build build --config Debug --target test
+
+.PHONY: gdb_test
+gdb_test: test
+	gdb ./build/test
+
 .PHONY: clean
 clean:
 	cmake --build build --target clean
