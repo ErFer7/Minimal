@@ -8,6 +8,7 @@
 #include "../types.hpp"
 #include "../utils/engine_core_dependency_injector.hpp"
 #include "../utils/event.hpp"
+#include "../utils/restricted_instance.hpp"
 
 // TODO: Implement an activity state
 // TODO: Implement name with a hash map
@@ -15,7 +16,7 @@
 // TODO: Optimize component creation
 // TODO: Event listeners
 
-class Entity : public EngineCoreDependencyInjector {
+class Entity : public EngineCoreDependencyInjector, RestrictedInstance {
     friend class EntityContainer;
 
    public:
@@ -23,25 +24,9 @@ class Entity : public EngineCoreDependencyInjector {
     typedef std::vector<std::unique_ptr<Component>> ComponentsVector;
 
    public:
-    Entity(const Entity &other) noexcept = delete;
-
-    Entity(Entity &&other) noexcept = delete;
-
     Entity(EngineCore *engine_core, Entity *parent);
 
-    virtual ~Entity();
-
-    Entity &operator=(const Entity &other) noexcept = delete;
-
-    Entity &operator=(Entity &&other) noexcept = delete;
-
-    Entity operator*() = delete;
-
-    const Entity operator*() const = delete;
-
-    Entity *operator&() = delete;
-
-    const Entity *operator&() const = delete;
+    virtual ~Entity() override;
 
     inline Entity *get_parent() const { return this->_parent; }
 

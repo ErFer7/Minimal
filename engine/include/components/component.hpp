@@ -3,20 +3,17 @@
 #include "../types.hpp"
 #include "../utils/engine_core_dependency_injector.hpp"
 #include "../utils/event.hpp"
+#include "../utils/restricted_instance.hpp"
 
 // TODO: Implement an activity state
 // TODO: Implement name with a hash map
 
-class Component : public EngineCoreDependencyInjector {
+class Component : public EngineCoreDependencyInjector, RestrictedInstance {
     friend class Entity;
 
    public:
     Component(EngineCore *engine_core, Entity *entity, bool unique = false)
         : EngineCoreDependencyInjector(engine_core), _unique(unique), _entity(entity) {}
-
-    virtual ~Component() = default;
-
-    bool operator==(const Component &other) const { return *this == other; }
 
     inline bool is_unique() const { return this->_unique; }
 
